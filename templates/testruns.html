@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}Test Runs{% endblock %}
+
+{% block content %}
+
+
+    <h2>Hello, {{ user.username }}</h2>
+
+    <a href="{% url 'logout' %}">logout</a>
+    <hr/>
+    <table>
+        <tr>
+            <td><a href="{% url 'home' %}">Dashboard</a></td>
+            <td><a href="{% url 'tests' %}">Test Cases</a></td>
+            <td><a href="{% url 'runs' %}">Test Runs</a></td>
+            <td><a href="{% url 'new_test' %}">Create new test</a></td>
+        </tr>
+    </table>
+    <H3> Test runs:</H3>
+    <H4>Total {{ count }}</H4>
+    <table class="testRuns">
+        <tr>
+            <td>Test Id</td>
+            <td>Summary</td>
+            <td>Status</td>
+            <td>Executor</td>
+            <td>Timestamp</td>
+        </tr>
+        {% for run in test_runs %}
+            <tr class="testRow_{{ run.test_case.id }}">
+                <td>{{ run.test_case.id }}</td>
+                <td>{{ run.test_case.name }}</td>
+                <td>{{ run.status }}</td>
+                <td>{{ run.executor.username }}</td>
+                <td>{{ run.timestamp | date:"d-m-Y H:i:s" }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <input type="button" onclick="lazyLoad()" value="load more">
+
+    <h3 class="theEnd" hidden>All runs loaded</h3>
+
+    <script>
+        $(window).scroll(function () {
+            if ($(window).scrollTop() + $(window).height() >= $(document).height()) {
+                lazyLoad();
+            }
+        });
+
+        var page = 1;
+        var end = {% if end %} true {% else %} false {% endif %};
+
+        function lazyLoad() {
+            if (end)
+                return;
+            let xhr = new XMLHttpRequest();
+            let url = "{% url 'lazy_run' %}?page=" + page;
+            xhr.open("GET", url);
+            xhr.responseType = 'json';
+            xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+            xhr.onload = function () {
+                if (xhr.status == 200) {
+                    console.log('page = ', ++page);
+                    end = xhr.response.end;
+                    console.log('is the end = ', end);
+                    if (end)
+                        $('.theEnd').show();
+                    xhr.response.runs.forEach((item, index) => {
+                        addRow($('.testRuns'), item);
+                    })
+                }
+            }
+            xhr.send();
+        }
+
+        function addRow(table, row) {
+            table.append(`<tr class="testRow_${row.id}">
+                                <td>${row.id}</td>
+                                <td>${row.name}</td>
+                                <td>${row.status}</td>
+                                <td>${row.executor}</td>
+                                <td>${row.timestamp}</td>
+                                </tr>`)
+        }
+
+    </script>
+    <tr class="testRow_{{ run.test_case.id }}">
+        <td>{{ run.test_case.id }}</td>
+        <td>{{ run.test_case.name }}</td>
+        <td>{{ run.status }}</td>
+        <td>{{ run.executor.username }}</td>
+        <td>{{ run.timestamp | date:"d-m-Y H:i:s" }}</td>
+    </tr>
+
+{% endblock %}

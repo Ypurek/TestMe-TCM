@@ -1,0 +1,22 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}Simple Test management{% endblock %}</title>
+    {% load static %}
+    <script type='text/javascript' src="{% static 'assets/js/jquery-3.5.1.min.js' %}"></script>
+    <script type="text/javascript"
+            src="{% static 'assets/js/js.cookie-2.2.1.min.js' %}"></script>
+    <link href="{% static 'assets/css/style.css' %}" rel="stylesheet">
+
+
+</head>
+<body>
+
+
+{% block content %}
+{% endblock %}
+
+</body>
+</html>

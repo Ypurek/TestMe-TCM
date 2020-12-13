@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% block title %}Test Cases{% endblock %}
+
+{% block content %}
+
+
+    <h2>Hello, {{ user.username }}</h2>
+
+    <a href="{% url 'logout' %}">logout</a>
+    <hr/>
+    <table>
+        <tr>
+            <td><a href="{% url 'home' %}">Dashboard</a></td>
+            <td><a href="{% url 'tests' %}">Test Cases</a></td>
+            <td><a href="{% url 'runs' %}">Test Runs</a></td>
+            <td><a href="{% url 'new_test' %}">Create new test</a></td>
+        </tr>
+    </table>
+    <H3> Test cases:</H3>
+    <H4>Total {{ count }}</H4>
+    <table class="testTable">
+        <tr>
+            <td>Test Id</td>
+            <td>Summary</td>
+            <td>Description/Steps</td>
+            <td>Author</td>
+            <td>Status</td>
+            <td>Last executor</td>
+            <td>Actions</td>
+            <td>Details</td>
+            <td>Delete</td>
+        </tr>
+        {% for test in tests %}
+            <tr class="testRow_{{ test.test_case.id }}">
+                <td>{{ test.test_case.id }}</td>
+                <td>{{ test.test_case.name }}</td>
+                <td><div class="testDescription">{{ test.test_case.description }}</div></td>
+                <td>{{ test.test_case.author }}</td>
+                <td class="testStatus_{{ test.test_case.id }}">{{ test.status }}</td>
+                <td>{{ test.last_executor }}</td>
+                <td>
+                    <button class="passBtn pass_{{ test.test_case.id }}"
+                            onclick="setStatus({{ test.test_case.id }}, 'PASS')">PASS
+                    </button>
+                    <button class="failBtn fail_{{ test.test_case.id }}"
+                            onclick="setStatus({{ test.test_case.id }}, 'FAIL')">FAIL
+                    </button>
+                </td>
+                <td>
+                    <button class="editBtn edit_{{ test.test_case.id }}" onclick="editTest({{ test.test_case.id }})">
+                        Details
+                    </button>
+                </td>
+                <td>
+                    <button class="deleteBtn delete_{{ test.test_case.id }}"
+                            onclick="deleteTest({{ test.test_case.id }})">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    <input type="button" onclick="lazyLoad()" value="load more">
+
+    <h3 class="theEnd" hidden>All tests loaded</h3>
+
+    <script>
+        $(window).scroll(function () {
+            if ($(window).scrollTop() + $(window).height() >= $(document).height()) {
+                lazyLoad();
+            }
+        });
+
+        function setStatus(testId, status) {
+            let xhr = new XMLHttpRequest();
+            let payload = {'status': status};
+            let url = "{% url 'set_status' 12345 %}".replace(/12345/, testId);
+            xhr.open("POST", url);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+            xhr.onreadystatechange = function () {
+                if (xhr.status == 200) {
+                    $('.testStatus_' + testId).text(status);
+                    console.log(this.responseText)
+                }
+            }
+            xhr.send(JSON.stringify(payload));
+        }
+
+        function deleteTest(testId) {
+            let xhr = new XMLHttpRequest();
+            let url = "{% url 'delete' 12345 %}".replace(/12345/, testId);
+            xhr.open("DELETE", url);
+            xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+            xhr.onreadystatechange = function () {
+                if (xhr.status == 200) {
+                    $('.testRow_' + testId).slideUp(200, function () {
+                        $(this).remove();
+                    });
+                    console.log(this.responseText)
+                }
+            }
+            xhr.send();
+        }
+
+        function editTest(testId) {
+            let url = "{% url 'update' 12345 %}".replace(/12345/, testId);
+            window.location.href = url;
+        }
+
+        var page = 1;
+        var end = {% if end %} true {% else %} false {% endif %};
+
+        function lazyLoad() {
+            if (end)
+                return;
+            let xhr = new XMLHttpRequest();
+            let url = "{% url 'lazy_test' %}?page=" + page;
+            xhr.open("GET", url);
+            xhr.responseType = 'json';
+            xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+            xhr.onload = function () {
+                if (xhr.status == 200) {
+                    console.log('page = ', ++page);
+                    end = xhr.response.end;
+                    console.log('is the end = ', end);
+                    if (end)
+                        $('.theEnd').show();
+                    xhr.response.tests.forEach((item, index) => {
+                        addRow($('.testTable'), item);
+                    })
+                }
+            }
+            xhr.send();
+        }
+
+        function addRow(table, row) {
+            let author = row.author == null ? 'None' : row.author
+            let executor = row.executor == null ? 'None' : row.executor
+            let status = row.status == null ? 'None' : row.status
+            table.append(`<tr class="testRow_${row.id}">
+                                <td>${row.id}</td>
+                                <td>${row.name}</td>
+                                <td><div class="testDescription">${row.description}</div></td>
+                                <td>${author}</td>
+                                <td class="testStatus_${row.id}">${status}</td>
+                                <td>${executor}</td>
+                                <td><button class="passBtn pass_${row.id}"
+                            onclick="setStatus(${row.id}, 'PASS')">PASS
+                    </button>
+                    <button class="failBtn fail_${row.id}"
+                            onclick="setStatus(${row.id}, 'FAIL')">FAIL
+                    </button></td>
+                                <td><button class="editBtn edit_${row.id}" onclick="editTest(${row.id})">
+                        Details
+                    </button></td>
+                                <td><button class="deleteBtn delete_${row.id}"
+                            onclick="deleteTest(${row.id})">
+                        Delete
+                    </button></td>
+                            </tr>`)
+        }
+    </script>
+
+{% endblock %}

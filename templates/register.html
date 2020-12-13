@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Create an Account{% endblock %}
+
+{% block content %}
+    <form method="POST" action="{% url 'register' %}">
+        {% csrf_token %}
+        <table>
+            <tr>
+                <td>{{ form.username.label_tag }}</td>
+                <td>{{ form.username }}</td>
+                <td>{{ form.username.errors }}</td>
+            </tr>
+            <tr>
+                <td>{{ form.email.label_tag }}</td>
+                <td>{{ form.email }}</td>
+                <td>{{ form.email.errors }}</td>
+            </tr>
+            <tr>
+                <td>{{ form.password1.label_tag }}</td>
+                <td>{{ form.password1 }}</td>
+                <td>{{ form.password1.errors }}</td>
+            </tr>
+            <tr>
+                <td>{{ form.password2.label_tag }}</td>
+                <td>{{ form.password2 }}</td>
+                <td>{{ form.password2.errors }}</td>
+            </tr>
+        </table>
+
+        <input type="submit" value="Register">
+    </form>
+
+    <a href="{% url 'login' %}">login</a>
+{% endblock %}
