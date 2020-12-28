@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    {% if user.is_authenticated %}
+        <h2>Hello, {{ user.username }}</h2>
+
+        <a href="{% url 'logout' %}">logout</a>
+        <hr/>
+    {% endif %}
+    <H3>Wait Page</H3>
+
+    <h4>Status: {{ status }}</h4>
+
+    <h3>navigation</h3>
+    <table>
+        <tr>
+            <td><a href="{% url 'home' %}">Dashboard</a></td>
+            <td><a href="{% url 'demo_pages' %}">Demo pages</a></td>
+        </tr>
+    </table>
+
+{% endblock %}

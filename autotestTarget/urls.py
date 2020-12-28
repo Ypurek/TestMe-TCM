@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path
-from tcm.views import testnrun, auth
+from tcm.views import testnrun, auth, demo
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -21,4 +21,7 @@ urlpatterns = [
 
     path('lazytest/', testnrun.lazy_load_tests, name='lazy_test'),
     path('lazyrun/', testnrun.lazy_load_runs, name='lazy_run'),
+
+    path('demo/', demo.dashboard, name='demo_pages'),
+    path('demo/waitPage', demo.wait_page, name='wait_page'),
 ]

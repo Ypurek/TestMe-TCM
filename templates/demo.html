@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <H3>Demo pages</H3>
+
+    <table>
+        <tr>
+            <td><a class="waitPage" href="{% url 'wait_page' %}?time=5">open page and wait ...</a></td>
+            <td><input type="text" class="waitPageTime" value="5">, sec</td>
+        </tr>
+    </table>
+
+    <script>
+        $('.waitPage').click(function (event) {
+            event.preventDefault();
+            time = $('.waitPageTime').val();
+            window.location.href = "{% url 'wait_page' %}?time=" + time;
+        })
+    </script>
+
+{% endblock %}

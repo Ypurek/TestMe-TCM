@@ -13,6 +13,28 @@
 
 </head>
 <body>
+{% if user.is_authenticated %}
+    <header>
+        <div class="logo">
+            <a href="/">
+                <img src="{% static "assets/img/logo.jpg" %}" width="60" height="60px"/>
+            </a>
+        </div>
+        <div class="menu">
+            <ul>
+                <li><a href="{% url 'home' %}">Dashboard</a></li>
+                <li><a href="{% url 'tests' %}">Test Cases</a></li>
+                <li><a href="{% url 'runs' %}">Test Runs</a></li>
+                <li><a href="{% url 'new_test' %}">Create new test</a></li>
+                <li><a href="{% url 'demo_pages' %}">Demo pages</a></li>
+            </ul>
+        </div>
+        <div class="account">
+        </div>
+        <h2>Hello, {{ user.username }}</h2>
+        <a href="{% url 'logout' %}">logout</a>
+    </header>
+{% endif %}
 
 
 {% block content %}

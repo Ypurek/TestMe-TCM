@@ -2,7 +2,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from tcm.conf import TestStatus
 from tcm.forms import TestCaseForm, UpdateTestCaseForm
-from tcm.models import TestCaseStat, TestCase, TestRun
+from tcm.models import TestCase, TestRun
+from django.db.models import Subquery
 from django.http import HttpResponseNotFound, JsonResponse
 import json
 import datetime as dt
@@ -12,10 +13,19 @@ PAGE_SIZE = 40
 
 def get_stats():
     stats = dict()
-    stats['total'] = TestCaseStat.objects.count()
-    stats['passed'] = TestCaseStat.objects.filter(status=TestStatus.PASS.value).count()
-    stats['failed'] = TestCaseStat.objects.filter(status=TestStatus.FAIL.value).count()
-    stats['norun'] = stats['total'] - stats['passed'] - stats['failed']
+    stats['total'] = TestCase.objects.count()
+    passed = 0
+    failed = 0
+    for test in TestCase.objects.prefetch_related('runs').all():
+        runs = test.runs
+        if runs.count() > 0:
+            if runs.latest('timestamp').status == TestStatus.PASS.value:
+                passed += 1
+            elif runs.latest('timestamp').status == TestStatus.FAIL.value:
+                failed += 1
+    stats['passed'] = passed
+    stats['failed'] = failed
+    stats['norun'] = stats['total'] - failed - passed
     return stats
 
 
@@ -26,9 +36,24 @@ def dashboard(request):
 
 @login_required
 def test_cases(request):
-    tc_list = TestCaseStat.objects.all()
-    print(str(tc_list.query))
-    return render(request, 'testcases.html', context={'tests': tc_list[:PAGE_SIZE],
+    # todo
+    tc_list = TestCase.objects.prefetch_related('runs').all()
+    full_list = list()
+    for tc in tc_list[:PAGE_SIZE]:
+        if tc.runs.count() > 0:
+            status = tc.runs.latest('timestamp').status
+            executor = tc.runs.latest('timestamp').executor
+        else:
+            status, executor = 'Norun', None
+        full_list.append({
+            'id': tc.id,
+            'name': tc.name,
+            'description': tc.description,
+            'author': tc.author,
+            'status': status,
+            'last_executor': executor
+        })
+    return render(request, 'testcases.html', context={'tests': full_list,
                                                       'count': len(tc_list),
                                                       'end': len(tc_list) <= PAGE_SIZE})
 
@@ -98,25 +123,27 @@ def refresh_stats(request):
 @login_required
 def lazy_load_tests(request):
     current_page = int(request.GET.get('page'))
-    tc_list = TestCaseStat.objects.all()
+    # todo
+    tc_list = TestCase.objects.all()
     the_end = (current_page + 1) * PAGE_SIZE > len(tc_list)
-    payload = tests_2_json(tc_list[current_page * PAGE_SIZE: (current_page + 1) * PAGE_SIZE])
+    tests = tc_list[current_page * PAGE_SIZE: (current_page + 1) * PAGE_SIZE]
+    payload = list()
+    for tc in tests:
+        if tc.runs.count() > 0:
+            status = tc.runs.latest('timestamp').status
+            executor = tc.runs.latest('timestamp').executor
+        else:
+            status, executor = 'Norun', None
+        payload.append({
+            'id': tc.id,
+            'name': tc.name,
+            'description': tc.description,
+            'author': tc.author,
+            'status': status,
+            'executor': executor
+        })
     return JsonResponse({'tests': payload,
                          'end': the_end}, status=200)
-
-
-def tests_2_json(tests: list):
-    result = []
-    for test in tests:
-        author = None if test.test_case.author is None else test.test_case.author.username
-        executor = None if test.last_executor is None else test.last_executor.username
-        result.append({'id': test.test_case.id,
-                       'name': test.test_case.name,
-                       'description': test.test_case.description,
-                       'author': author,
-                       'status': test.status,
-                       'executor': executor})
-    return result
 
 
 @login_required

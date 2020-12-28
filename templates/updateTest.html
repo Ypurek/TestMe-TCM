@@ -4,12 +4,7 @@
 
 {% block content %}
 
-    {% if user.is_authenticated %}
-        <h2>Hello, {{ user.username }}</h2>
 
-        <a href="{% url 'logout' %}">logout</a>
-        <hr/>
-    {% endif %}
     <H3>Update Test:</H3>
     <form method="post">
 
@@ -40,13 +35,4 @@
         <input type="submit" value="Update">
     </form>
 
-    <h3>navigation</h3>
-    <table>
-        <tr>
-            <td><a href="{% url 'home' %}">Dashboard</a></td>
-            <td><a href="{% url 'tests' %}">Test Cases</a></td>
-            <td><a href="{% url 'runs' %}">Test Runs</a></td>
-            <td><a href="{% url 'new_test' %}">Create new test</a></td>
-        </tr>
-    </table>
 {% endblock %}
