@@ -5,18 +5,7 @@
 {% block content %}
 
 
-    <h2>Hello, {{ user.username }}</h2>
 
-    <a href="{% url 'logout' %}">logout</a>
-    <hr/>
-    <table>
-        <tr>
-            <td><a href="{% url 'home' %}">Dashboard</a></td>
-            <td><a href="{% url 'tests' %}">Test Cases</a></td>
-            <td><a href="{% url 'runs' %}">Test Runs</a></td>
-            <td><a href="{% url 'new_test' %}">Create new test</a></td>
-        </tr>
-    </table>
     <H3> Test cases:</H3>
     <H4>Total {{ count }}</H4>
     <table class="testTable">
@@ -32,29 +21,29 @@
             <td>Delete</td>
         </tr>
         {% for test in tests %}
-            <tr class="testRow_{{ test.test_case.id }}">
-                <td>{{ test.test_case.id }}</td>
-                <td>{{ test.test_case.name }}</td>
-                <td><div class="testDescription">{{ test.test_case.description }}</div></td>
-                <td>{{ test.test_case.author }}</td>
-                <td class="testStatus_{{ test.test_case.id }}">{{ test.status }}</td>
+            <tr class="testRow_{{ test.id }}">
+                <td>{{ test.id }}</td>
+                <td>{{ test.name }}</td>
+                <td><div class="testDescription">{{ test.description }}</div></td>
+                <td>{{ test.author }}</td>
+                <td class="testStatus_{{ test.id }}">{{ test.status }}</td>
                 <td>{{ test.last_executor }}</td>
                 <td>
-                    <button class="passBtn pass_{{ test.test_case.id }}"
-                            onclick="setStatus({{ test.test_case.id }}, 'PASS')">PASS
+                    <button class="passBtn pass_{{ test.id }}"
+                            onclick="setStatus({{ test.id }}, 'PASS')">PASS
                     </button>
-                    <button class="failBtn fail_{{ test.test_case.id }}"
-                            onclick="setStatus({{ test.test_case.id }}, 'FAIL')">FAIL
+                    <button class="failBtn fail_{{ test.id }}"
+                            onclick="setStatus({{ test.id }}, 'FAIL')">FAIL
                     </button>
                 </td>
                 <td>
-                    <button class="editBtn edit_{{ test.test_case.id }}" onclick="editTest({{ test.test_case.id }})">
+                    <button class="editBtn edit_{{ test.id }}" onclick="editTest({{ test.id }})">
                         Details
                     </button>
                 </td>
                 <td>
-                    <button class="deleteBtn delete_{{ test.test_case.id }}"
-                            onclick="deleteTest({{ test.test_case.id }})">
+                    <button class="deleteBtn delete_{{ test.id }}"
+                            onclick="deleteTest({{ test.id }})">
                         Delete
                     </button>
                 </td>
