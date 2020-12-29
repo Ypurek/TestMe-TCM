@@ -3,34 +3,39 @@
 {% block title %}Test Runs{% endblock %}
 
 {% block content %}
-
-
-
-    <H3> Test runs:</H3>
-    <H4>Total {{ count }}</H4>
-    <table class="testRuns">
-        <tr>
-            <td>Test Id</td>
-            <td>Summary</td>
-            <td>Status</td>
-            <td>Executor</td>
-            <td>Timestamp</td>
-        </tr>
-        {% for run in test_runs %}
-            <tr class="testRow_{{ run.test_case.id }}">
-                <td>{{ run.test_case.id }}</td>
-                <td>{{ run.test_case.name }}</td>
-                <td>{{ run.status }}</td>
-                <td>{{ run.executor.username }}</td>
-                <td>{{ run.timestamp | date:"d-m-Y H:i:s" }}</td>
-            </tr>
-        {% endfor %}
-    </table>
-
-    <input type="button" onclick="lazyLoad()" value="load more">
-
-    <h3 class="theEnd" hidden>All runs loaded</h3>
-
+  <div class="wrap">
+    <div class="container">
+    <div class="wBox2">
+      <div class="tableTitle">Test runs <span>(Total {{ count }})</span></div>
+        <div class="testTableBox">
+          <table class="testTable testRuns">
+            <thead class="ttHead">
+              <tr>
+                <th class="thId">Id</th>
+                <th class="thName">Summary</th>
+                <th class="thStatus">Status</th>
+                <th class="thExecutor">Executor</th>
+                <th class="thTime">Timestamp</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for run in test_runs %}
+                <tr class="testRow_{{ run.test_case.id }}">
+                  <td class="ttId">{{ run.test_case.id }}</td>
+                  <td class="ttName">{{ run.test_case.name }}</td>
+                  <td class="ttStatus"><span class="{{ run.status }}">{{ run.status }}</span></td>
+                  <td class="ttExecutor">{{ run.executor.username }}</td>
+                  <td class="ttTime">{{ run.timestamp | date:"d-m-Y H:i:s" }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="loadMore"><input type="button" onclick="lazyLoad()" value="load more"></div>
+      </div>
+    </div>
+  </div>
+  
     <script>
         $(window).scroll(function () {
             if ($(window).scrollTop() + $(window).height() >= $(document).height()) {
@@ -55,7 +60,7 @@
                     end = xhr.response.end;
                     console.log('is the end = ', end);
                     if (end)
-                        $('.theEnd').show();
+                        $('.loadMore').hide();
                     xhr.response.runs.forEach((item, index) => {
                         addRow($('.testRuns'), item);
                     })
@@ -66,21 +71,22 @@
 
         function addRow(table, row) {
             table.append(`<tr class="testRow_${row.id}">
-                                <td>${row.id}</td>
-                                <td>${row.name}</td>
-                                <td>${row.status}</td>
-                                <td>${row.executor}</td>
-                                <td>${row.timestamp}</td>
-                                </tr>`)
+              <td class="ttId">${row.id}</td>
+              <td class="ttName">${row.name}</td>
+              <td class="ttStatus"><span class="${row.status}">${row.status}</span></td>
+              <td class="ttExecutor">${row.executor}</td>
+              <td class="ttTime">${row.timestamp}</td>
+            </tr>`)
         }
+        
 
     </script>
     <tr class="testRow_{{ run.test_case.id }}">
-        <td>{{ run.test_case.id }}</td>
-        <td>{{ run.test_case.name }}</td>
-        <td>{{ run.status }}</td>
-        <td>{{ run.executor.username }}</td>
-        <td>{{ run.timestamp | date:"d-m-Y H:i:s" }}</td>
+        <td class="ttId">{{ run.test_case.id }}</td>
+        <td class="ttName">{{ run.test_case.name }}</td>
+        <td class="ttStatus"><span class="{{ run.status }}">{{ run.status }}</span></td>
+        <td class="ttExecutor">{{ run.executor.username }}</td>
+        <td class="ttTime">{{ run.timestamp | date:"d-m-Y H:i:s" }}</td>
     </tr>
 
 {% endblock %}

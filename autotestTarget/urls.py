@@ -24,4 +24,6 @@ urlpatterns = [
 
     path('demo/', demo.dashboard, name='demo_pages'),
     path('demo/waitPage', demo.wait_page, name='wait_page'),
+    path('demo/waitAjax', demo.wait_ajax, name='wait_ajax'),
+    path('demo/crash', demo.crash, name='crash'),
 ]

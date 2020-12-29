@@ -3,36 +3,28 @@
 {% block title %}Update Test{% endblock %}
 
 {% block content %}
-
-
-    <H3>Update Test:</H3>
-    <form method="post">
-
-        {% csrf_token %}
-        <table>
-            <tr>
-                <td>test id</td>
-                <td>{{ test_id }}</td>
-            </tr>
-            <tr>
-                <td>test author</td>
-                <td>{{ author.username }}</td>
-            </tr>
-            <tr>
-                <td>test run times</td>
-                <td>{{ test_runs }}</td>
-            </tr>
-            <tr>
-                <td>test name</td>
-                <td>{{ form.name }}</td>
-            </tr>
-            <tr>
-                <td>test description</td>
-                <td>{{ form.description }}</td>
-            </tr>
-        </table>
-
-        <input type="submit" value="Update">
-    </form>
-
+  <div class="wrap wrapFlex">
+    <div class="container">
+      <div class="wBox">
+        <h3>Update Test</h3>
+        <div class="updateForm">
+          <form method="post">
+              {% csrf_token %}
+              <p>Test id: {{ test_id }}</p>
+              <p>
+                <label>Test name</label>
+                {{ form.name }}
+              </p>
+              <p>Test author: {{ author.username }}</p>
+              <p>Test run times: {{ test_runs }}</p>
+              <p>
+                <label class="label" for="id_description">Test description</label>
+                {{ form.description }}
+              </p>
+              <div class="btn"><input type="submit" value="Update"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}
