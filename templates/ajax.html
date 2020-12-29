@@ -1,45 +1,32 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-    <H3>Wait Page</H3>
-
-    <h4>Status: {{ status }}</h4>
-    <h4>Counts: {{ times }}</h4>
-    <div class="ajaxResponses"></div>
-
-    <h3>navigation</h3>
-    <table>
-        <tr>
-            <td><a href="{% url 'home' %}">Dashboard</a></td>
-            <td><a href="{% url 'demo_pages' %}">Demo pages</a></td>
-        </tr>
-    </table>
-
+    <div class="wrap wrapFlex">
+        <div class="container">
+            <div class="wBox">
+                <h3>Wait Page</h3>
+                <h4>Status: {{ status }}</h4>
+                <h4>Counts: {{ times }}</h4>
+                <div class="ajaxResponses"></div>
+            </div>
+        </div>
+    </div>
     <script>
         $(document).ready(function () {
             console.log("ready!");
-                sendRequest({{ times }})
+            sendRequest({{ times }})
         });
 
         function sendRequest(times) {
             if (times < 1)
                 return
-            let xhr = new XMLHttpRequest();
-            let url = "{% url 'wait_ajax' %}?hidden=y";
-            xhr.open("GET", url);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4) {
-                    if (xhr.status == 200) {
-                        console.log('requests count: ' + times);
-                        $('.ajaxResponses').append('<p>response</p>');
-                        sendRequest(times - 1);
-                    }
+            LightAjax.get("{% url 'wait_ajax' %}?hidden=y", function (status, response) {
+                if (status == 200) {
+                    console.log('requests count: ' + times);
+                    $('.ajaxResponses').append('<p>response</p>');
+                    sendRequest(times - 1);
                 }
-            }
-            xhr.send();
+            })
         }
 
 
