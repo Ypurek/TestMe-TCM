@@ -1,14 +1,10 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-from tcm.conf import TestStatus
+from tcm.conf import TestStatus, PAGE_SIZE
 from tcm.forms import TestCaseForm, UpdateTestCaseForm
 from tcm.models import TestCase, TestRun
-from django.db.models import Subquery
-from django.http import HttpResponseNotFound, JsonResponse
+from django.http import JsonResponse
 import json
-import datetime as dt
-
-PAGE_SIZE = 40
 
 
 def get_stats():

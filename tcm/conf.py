@@ -1,5 +1,7 @@
 from enum import Enum
 
+PAGE_SIZE = 40
+
 
 class TestStatus(Enum):
     NORUN = 'NORUN'
