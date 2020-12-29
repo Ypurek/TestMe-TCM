@@ -1,51 +1,31 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <div class="wrap">
-    <div class="container">
-      <div class="wBox">
-        
-        <p class="noRun">No Run: <span>{{ norun }}</span></p>
-        <p class="passed">Passed: <span>{{ passed }}</span></p>
-        <p class="failed">Failed: <span>{{ failed }}</span></p>
-        <p class="total">Total: <span>{{ total }}</span></p>
-        <div class="refresh"><input type="button" onclick="refreshStats()" value="Refresh Stats"></div>
-      </div>
+    <div class="wrap">
+        <div class="container">
+            <div class="wBox">
+
+                <p class="noRun">No Run: <span>{{ norun }}</span></p>
+                <p class="passed">Passed: <span>{{ passed }}</span></p>
+                <p class="failed">Failed: <span>{{ failed }}</span></p>
+                <p class="total">Total: <span>{{ total }}</span></p>
+                <div class="refresh"><input type="button" onclick="refreshStats()" value="Refresh Stats"></div>
+            </div>
+        </div>
     </div>
-  </div>    
-    
+
 
     <script>
-      // test on how fetch works
-      function refreshStats() {
-        fetch("{% url 'refresh' %}", {
-            method: 'GET'
-        })
-        .then(response => {
-          return response.json().then(json => {
-                  if (response.ok) {
-                      return json
-                  } else {
-                      return Promise.reject({
-                          status: response.status,
-                          statusText: response.statusText,
-                          errorData: json
-                      })
-                  }
-              }
-          )
-        .then(data => {
-            $('.noRun span').text(data.norun);
-            $('.passed span').text(data.passed);
-            $('.failed span').text(data.failed);
-            $('.total span').text(data.total);
-        })
-        .catch(error => {
-            console.log('error code is', error.status);
-            console.log(error.errorData);
-          })
-        });
-      }
+        function refreshStats() {
+            LightAjax.get("{% url 'refresh' %}", function (status, response) {
+                if (status == 200) {
+                    $('.noRun span').text(response.norun);
+                    $('.passed span').text(response.passed);
+                    $('.failed span').text(response.failed);
+                    $('.total span').text(response.total);
+                }
+            });
+        }
     </script>
 
 {% endblock %}

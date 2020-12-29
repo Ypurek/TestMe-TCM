@@ -6,39 +6,55 @@
       <div class="wBox">
         <h3>Demo pages</h3>
         <div class="updateForm demoForm">
-          <p></p>
-          <table>
-              <tr>
-                  <td><input type="button" class="waitPage" value="Open page after _ seconds"></td>
-                  <td><input type="text" class="waitPageTime" value="5" min="1" max="100" minlength="1" maxlength="3"></td>
-              </tr>
-              <tr>
-                  <td><input type="button" class="waitAjax" value="Open page and wait _ ajax loaded"></td>
-                  <td><input type="text" class="waitAjaxRequests" value="5" min="1" max="10"></td>
-              </tr>
-              <tr>
-                  <td><input type="button" class="crash" value="Refresh (Cause crash)"></td>
-              </tr>
-          </table>
+          <div class="wait">
+            <div><input type="number" class="waitPageTime" value="5" min="1" max="100" minlength="1" maxlength="3"></div>
+            <div><a href="javascript:;" class="waitPage">Open page after <span>5</span> seconds</a></div>
+          </div>
+          <div class="wait">
+            <div><input type="number" class="waitAjaxRequests" value="5" min="1" max="10"></div>
+            <div><a href="javascript:;" class="waitAjax">Open page and wait <span>5</span> ajax loaded</a></div>
+          </div>
+          
+          <div class="refresh"><input type="button" class="crash" value="Refresh (Cause crash)"></div>
         </div>
       </div>
     </div>
   </div>
 
     <script>
-        $('.waitPage').click(function (event) {
-            time = $('.waitPageTime').val();
-            window.location.href = "{% url 'wait_page' %}?time=" + time;
-        });
+      $('.waitPageTime').blur(function() {
+        let waitPageTime = $(this).val();
+        if(waitPageTime > 100) {
+          waitPageTime = 100
+        } else if (waitPageTime < 1) {
+          waitPageTime = 1
+        }
+        $(this).val(waitPageTime)
+        $('.waitPage span').html(waitPageTime)
+      });
+      $('.waitAjaxRequests').blur(function() {
+        let waitAjaxRequests = $(this).val();
+        if(waitAjaxRequests > 100) {
+          waitAjaxRequests = 100
+        } else if (waitAjaxRequests < 1) {
+          waitAjaxRequests = 1
+        }
+        $(this).val(waitAjaxRequests)
+        $('.waitAjax span').html(waitAjaxRequests)
+      });
+      $('.waitPage').click(function (event) {
+          time = $('.waitPageTime').val();
+          window.location.href = "{% url 'wait_page' %}?time=" + time;
+      });
 
-        $('.waitAjax').click(function (event) {
-            time = $('.waitAjaxRequests').val();
-            window.location.href = "{% url 'wait_ajax' %}?time=" + time;
-        });
+      $('.waitAjax').click(function (event) {
+          time = $('.waitAjaxRequests').val();
+          window.location.href = "{% url 'wait_ajax' %}?time=" + time;
+      });
 
-        $('.crash').click(function (event) {
-            window.location.href = "{% url 'crash' %}";
-        });
+      $('.crash').click(function (event) {
+          window.location.href = "{% url 'crash' %}";
+      });
     </script>
 
 {% endblock %}

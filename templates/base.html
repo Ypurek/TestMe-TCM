@@ -1,52 +1,72 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{% block title %}Simple Test management{% endblock %}</title>
-  {% load static %}
-  <script type='text/javascript' src="{% static 'assets/js/jquery-3.5.1.min.js' %}"></script>
-  <script type="text/javascript" src="{% static 'assets/js/js.cookie-2.2.1.min.js' %}"></script>
-  <script type="text/javascript" src="{% static 'assets/js/script.js' %}"></script>
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-  <link href="{% static 'assets/css/style.css' %}" rel="stylesheet">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>{% block title %}Simple Test management{% endblock %}</title>
+    {% load static %}
+    <script type='text/javascript' src="{% static 'assets/js/jquery-3.5.1.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'assets/js/js.cookie-2.2.1.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'assets/js/script.js' %}"></script>
+    <script type="text/javascript" src="{% static 'assets/js/lightAjax.js' %}"></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="{% static 'assets/css/style.css' %}" rel="stylesheet">
 </head>
 <body>
-  {% if user.is_authenticated %}
+{% if user.is_authenticated %}
     <header>
-      <a href="#" class="menuBtn"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></a>
-      <div class="container">
-        <div class="lHeader">
-          <div class="logo"><a href="{% url 'home' %}"><img src="{% static "assets/img/logo.svg" %}"/><img src="{% static "assets/img/logo2.svg" %}"/></a></div>
-          <div class="menuBox">
-            <div class="menuInner">
-              <ul>
-                <li><a href="{% url 'home' %}">Dashboard</a></li>
-                <li><a href="{% url 'tests' %}">Test Cases</a></li>
-                <li><a href="{% url 'runs' %}">Test Runs</a></li>
-                <li><a href="{% url 'new_test' %}">Create new test</a></li>
-                <li><a href="{% url 'demo_pages' %}">Demo pages</a></li>
-              </ul>
+        <a href="#" class="menuBtn"><span class="icon-bar"></span><span class="icon-bar"></span><span
+                class="icon-bar"></span></a>
+        <div class="container">
+            <div class="lHeader">
+                <div class="logo"><a href="{% url 'home' %}"><img src="{% static "assets/img/logo.svg" %}"/><img
+                        src="{% static "assets/img/logo2.svg" %}"/></a></div>
+                <div class="menuBox">
+                    <div class="menuInner">
+                        <ul>
+                            <li><a href="{% url 'home' %}">Dashboard</a></li>
+                            <li><a href="{% url 'tests' %}">Test Cases</a></li>
+                            <li><a href="{% url 'runs' %}">Test Runs</a></li>
+                            <li><a href="{% url 'new_test' %}">Create new test</a></li>
+                            <li><a href="{% url 'demo_pages' %}">Demo pages</a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-          </div>
+            <div class="position">000:000</div>
+            <div class="account">
+                <h2>Hello, {{ user.username }}</h2>
+                <a href="{% url 'logout' %}" class="logOut"></a>
+            </div>
         </div>
-        <div class="position">000:000</div>
-        <div class="account">
-          <h2>Hello, {{ user.username }}</h2>
-          <a href="{% url 'logout' %}" class="logOut"></a>
-        </div>
-      </div>
     </header>
-  {% endif %}
-  {% if user.is_authenticated %}
+{% endif %}
+{% if user.is_authenticated %}
     <main>
-  {% else %}
+{% else %}
     <main class="mainLogin">
-  {% endif %}
-  
-    {% block content %}
-    {% endblock %}
-  </main>
+{% endif %}
+
+{% block content %}
+{% endblock %}
+</main>
+{% if user.is_authenticated %}
+    <script>
+        $(document).ready(function () {
+            LightAjax.token = Cookies.get('csrftoken');
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    let latitude = Number(position.coords.latitude).toFixed(1);
+                    let longitude = Number(position.coords.longitude).toFixed(1);
+                    console.log(latitude + ':' + longitude);
+                    $('.position').text(latitude + ':' + longitude);
+                });
+            }
+
+        });
+
+    </script>
+{% endif %}
 </body>
 </html>

@@ -3,39 +3,39 @@
 {% block title %}Test Runs{% endblock %}
 
 {% block content %}
-  <div class="wrap">
-    <div class="container">
-    <div class="wBox2">
-      <div class="tableTitle">Test runs <span>(Total {{ count }})</span></div>
-        <div class="testTableBox">
-          <table class="testTable testRuns">
-            <thead class="ttHead">
-              <tr>
-                <th class="thId">Id</th>
-                <th class="thName">Summary</th>
-                <th class="thStatus">Status</th>
-                <th class="thExecutor">Executor</th>
-                <th class="thTime">Timestamp</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for run in test_runs %}
-                <tr class="testRow_{{ run.test_case.id }}">
-                  <td class="ttId">{{ run.test_case.id }}</td>
-                  <td class="ttName">{{ run.test_case.name }}</td>
-                  <td class="ttStatus"><span class="{{ run.status }}">{{ run.status }}</span></td>
-                  <td class="ttExecutor">{{ run.executor.username }}</td>
-                  <td class="ttTime">{{ run.timestamp | date:"d-m-Y H:i:s" }}</td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+    <div class="wrap">
+        <div class="container">
+            <div class="wBox2">
+                <div class="tableTitle">Test runs <span>(Total {{ count }})</span></div>
+                <div class="testTableBox">
+                    <table class="testTable testRuns">
+                        <thead class="ttHead">
+                        <tr>
+                            <th class="thId">Id</th>
+                            <th class="thName">Summary</th>
+                            <th class="thStatus">Status</th>
+                            <th class="thExecutor">Executor</th>
+                            <th class="thTime">Timestamp</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for run in test_runs %}
+                            <tr class="testRow_{{ run.test_case.id }}">
+                                <td class="ttId">{{ run.test_case.id }}</td>
+                                <td class="ttName">{{ run.test_case.name }}</td>
+                                <td class="ttStatus"><span class="{{ run.status }}">{{ run.status }}</span></td>
+                                <td class="ttExecutor">{{ run.executor.username }}</td>
+                                <td class="ttTime">{{ run.timestamp | date:"d-m-Y H:i:s" }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="loadMore"><input type="button" onclick="lazyLoad()" value="load more"></div>
+            </div>
         </div>
-        <div class="loadMore"><input type="button" onclick="lazyLoad()" value="load more"></div>
-      </div>
     </div>
-  </div>
-  
+
     <script>
         $(window).scroll(function () {
             if ($(window).scrollTop() + $(window).height() >= $(document).height()) {
@@ -49,13 +49,9 @@
         function lazyLoad() {
             if (end)
                 return;
-            let xhr = new XMLHttpRequest();
             let url = "{% url 'lazy_run' %}?page=" + page;
-            xhr.open("GET", url);
-            xhr.responseType = 'json';
-            xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
-            xhr.onload = function () {
-                if (xhr.status == 200) {
+            LightAjax.get(url, function (status, response) {
+                if (status == 200) {
                     console.log('page = ', ++page);
                     end = xhr.response.end;
                     console.log('is the end = ', end);
@@ -65,8 +61,7 @@
                         addRow($('.testRuns'), item);
                     })
                 }
-            }
-            xhr.send();
+            });
         }
 
         function addRow(table, row) {
@@ -78,7 +73,7 @@
               <td class="ttTime">${row.timestamp}</td>
             </tr>`)
         }
-        
+
 
     </script>
     <tr class="testRow_{{ run.test_case.id }}">

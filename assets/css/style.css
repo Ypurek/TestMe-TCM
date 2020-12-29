@@ -116,6 +116,8 @@ main {padding:100px 0 30px; flex:1 0 auto; position:relative; z-index:1;}
   .wBox2 {padding:30px;}
 }
 
+h3 + h4 {margin-top:15px;}
+h4 + h4 {margin-top:15px;}
 h3, .tableTitle {font-size:18px; font-weight:700;}
 h3 span, .tableTitle span {font-size:12px; font-weight:400; color:#999;}
 .testTableBox {padding:30px 0;}
@@ -127,6 +129,7 @@ h3 span, .tableTitle span {font-size:12px; font-weight:400; color:#999;}
 .testTable th:last-child, .testTable td:last-child {padding-right:0;}
 .testRuns.testTable th:last-child, .testRuns.testTable td:last-child {width:10%; padding-right:5px; white-space:nowrap;}
 .testRuns.testTable td:last-child {font-size:12px;}
+.testDescription {white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:300px;}
 @media(max-width:767px){
   .testTableBox {margin:0 -15px;}
   .ttRow {background:#fff; width:100%; padding:10px 120px 10px 10px; margin:0 0 5px;}
@@ -204,6 +207,22 @@ h3 span, .tableTitle span {font-size:12px; font-weight:400; color:#999;}
 
 .btn {text-align:right;}
 
-@media(min-width:1200px){
-  .testDescription {white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:300px;}
+.wait {text-align:center;}
+.wait:first-child {padding:0 0 25px;}
+.wait a {background:#2582e7; width:100%; height:40px; line-height:40px; padding:0 15px; margin:15px 0; border-radius:4px; color:#fff; font-size:11px; font-weight:600; text-align:center; white-space:nowrap; display:block;}
+input[type=number] {width:60px; height:30px; line-height:30px; padding:0 5px; border:1px solid #ddd; font-size:14px; font-family:'Open Sans', sans-serif; font-weight:600; text-align:center; display:inline-block;}
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button {opacity: 1;}
+@media(min-width:375px){
+	.wait a {font-size:12px;}
 }
+@media(min-width:768px){
+	.wait {width:100%; display:flex; flex-flow:row nowrap; justify-content:space-between; align-items:center; text-align:left;}
+	.wait > div:first-child {order:2;}
+	.wait > div:last-child {width:90%; padding-right:20px;}
+	.wait a {margin:0; font-size:14px;}
+	input[type=number] {padding:0 0 0 5px; text-align:left;}
+}
+
+.ajaxResponses {padding:15px 0 0;}
+.ajaxResponses p {padding:0 0 5px; margin:0;}

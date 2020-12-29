@@ -3,53 +3,64 @@
 {% block title %}Test Cases{% endblock %}
 
 {% block content %}
-  <div class="wrap">
-    <div class="container">
-      <div class="wBox2">
-        <div class="tableTitle">Test cases <span>(Total {{ count }})</span></div>
-        <div class="testTableBox">
-          <table class="testTable">
-            <thead class="ttHead">
-              <tr class="ttRow">
-                <th>Id</th>
-                <th>Summary</th>
-                <th class="thDes">Description/Steps</th>
-                <th class="thAuthor">Author</th>
-                <th>Status</th>
-                <th class="thLast">Last executor</th>
-                <th></th>
-                <th></th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for test in tests %}
-                <tr class="testRow_{{ test.id }}">
-                  <td>{{ test.id }}</td>
-                  <td>{{ test.name }}</td>
-                  <td class="ttDes"><div class="testDescription">{{ test.description }}</div></td>
-                  <td class="ttAuthor">{{ test.author }}</td>
-                  <td class="ttStatus"><span class="testStatus_{{ test.id }} {{test.status}}">{{ test.status }}</span></td>
-                  <td class="ttLast">{{ test.last_executor }}</td>
-                  <td class="ttPassFail">
-                    <button class="ttPass passBtn pass_{{ test.id }}" onclick="setStatus({{ test.id }}, 'PASS')">PASS</button>
-                    <button class="ttFail failBtn fail_{{ test.id }}" onclick="setStatus({{ test.id }}, 'FAIL')">FAIL</button>
-                  </td>
-                  <td class="ttDetailsBtn">
-                    <button class="showDetailsButton editBtn edit_{{ test.id }}" onclick="editTest({{ test.id }})">Details</button>
-                  </td>
-                  <td class="ttRemBtn">
-                    <button class="ttRem deleteBtn delete_{{ test.id }}" onclick="deleteTest({{ test.id }})">Delete</button>
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+    <div class="wrap">
+        <div class="container">
+            <div class="wBox2">
+                <div class="tableTitle">Test cases <span>(Total {{ count }})</span></div>
+                <div class="testTableBox">
+                    <table class="testTable">
+                        <thead class="ttHead">
+                        <tr class="ttRow">
+                            <th>Id</th>
+                            <th>Summary</th>
+                            <th class="thDes">Description/Steps</th>
+                            <th class="thAuthor">Author</th>
+                            <th>Status</th>
+                            <th class="thLast">Last executor</th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for test in tests %}
+                            <tr class="testRow_{{ test.id }}">
+                                <td>{{ test.id }}</td>
+                                <td>{{ test.name }}</td>
+                                <td class="ttDes">
+                                    <div class="testDescription">{{ test.description }}</div>
+                                </td>
+                                <td class="ttAuthor">{{ test.author }}</td>
+                                <td class="ttStatus"><span
+                                        class="testStatus_{{ test.id }} {{ test.status }}">{{ test.status }}</span></td>
+                                <td class="ttLast">{{ test.last_executor }}</td>
+                                <td class="ttPassFail">
+                                    <button class="ttPass passBtn pass_{{ test.id }}"
+                                            onclick="setStatus({{ test.id }}, 'PASS')">PASS
+                                    </button>
+                                    <button class="ttFail failBtn fail_{{ test.id }}"
+                                            onclick="setStatus({{ test.id }}, 'FAIL')">FAIL
+                                    </button>
+                                </td>
+                                <td class="ttDetailsBtn">
+                                    <button class="showDetailsButton editBtn edit_{{ test.id }}"
+                                            onclick="editTest({{ test.id }})">Details
+                                    </button>
+                                </td>
+                                <td class="ttRemBtn">
+                                    <button class="ttRem deleteBtn delete_{{ test.id }}"
+                                            onclick="deleteTest({{ test.id }})">Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="loadMore"><input type="button" onclick="lazyLoad()" value="load more"></div>
+            </div>
         </div>
-        <div class="loadMore"><input type="button" onclick="lazyLoad()" value="load more"></div>
-      </div>
     </div>
-  </div>
     <script>
         $(window).scroll(function () {
             if ($(window).scrollTop() + $(window).height() >= $(document).height()) {
@@ -58,37 +69,27 @@
         });
 
         function setStatus(testId, status) {
-            let xhr = new XMLHttpRequest();
-            let payload = {'status': status};
             let url = "{% url 'set_status' 12345 %}".replace(/12345/, testId);
-            xhr.open("POST", url);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
-            xhr.onreadystatechange = function () {
-                if (xhr.status == 200) {
+            let payload = {'status': status};
+            LightAjax.post(url, JSON.stringify(payload), function (xhr_status, payload) {
+                if (xhr_status == 200) {
                     $('.testStatus_' + testId).text(status);
                     $('.testStatus_' + testId).removeClass('PASS').removeClass('FAIL');
                     $('.testStatus_' + testId).addClass(status);
-                    console.log(this.responseText)
+                    console.log('test ' + testId + ' deleted');
                 }
-            }
-            xhr.send(JSON.stringify(payload));
+            });
         }
 
         function deleteTest(testId) {
-            let xhr = new XMLHttpRequest();
             let url = "{% url 'delete' 12345 %}".replace(/12345/, testId);
-            xhr.open("DELETE", url);
-            xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
-            xhr.onreadystatechange = function () {
-                if (xhr.status == 200) {
+            LightAjax.delete(url, function (status, response) {
+                if (status == 200) {
                     $('.testRow_' + testId).slideUp(200, function () {
                         $(this).remove();
                     });
-                    console.log(this.responseText)
                 }
-            }
-            xhr.send();
+            });
         }
 
         function editTest(testId) {
@@ -104,11 +105,8 @@
                 return;
             let xhr = new XMLHttpRequest();
             let url = "{% url 'lazy_test' %}?page=" + page;
-            xhr.open("GET", url);
-            xhr.responseType = 'json';
-            xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
-            xhr.onload = function () {
-                if (xhr.status == 200) {
+            LightAjax.get(url, function (status, response) {
+                if (status == 200) {
                     console.log('page = ', ++page);
                     end = xhr.response.end;
                     console.log('is the end = ', end);
@@ -116,10 +114,9 @@
                         $('.loadMore').hide();
                     xhr.response.tests.forEach((item, index) => {
                         addRow($('.testTable'), item);
-                    })
+                    });
                 }
-            }
-            xhr.send();
+            });
         }
 
         function addRow(table, row) {
