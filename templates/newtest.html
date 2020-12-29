@@ -3,24 +3,27 @@
 {% block title %}Create New Test{% endblock %}
 
 {% block content %}
-
-    <H3>New Test Case:</H3>
-       <form method="post" action="{% url 'new_test' %}">
-
-        {% csrf_token %}
-        <table>
-            <tr>
-                <td>test name</td>
-                <td>{{ form.name }}</td>
-            </tr>
-            <tr>
-                <td>test description</td>
-                <td>{{ form.description }}</td>
-            </tr>
-        </table>
-
-        <input type="submit" value="Create">
-    </form>
+  <div class="wrap wrapFlex">
+    <div class="container">
+      <div class="wBox">
+        <h3>New Test Case</h3>
+        <div class="updateForm newTestForm">
+          <form method="post" action="{% url 'new_test' %}">
+            {% csrf_token %}
+            <p>
+              <label>Test name</label>
+              {{ form.name }}
+            </p>
+            <p>
+              <label class="label" for="id_description">Test description</label>
+              {{ form.description }}
+            </p>
+            <div class="btn"><input type="submit" value="Create"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 
 
 {% endblock %}

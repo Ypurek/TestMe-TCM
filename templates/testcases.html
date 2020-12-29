@@ -3,57 +3,53 @@
 {% block title %}Test Cases{% endblock %}
 
 {% block content %}
-
-
-
-    <H3> Test cases:</H3>
-    <H4>Total {{ count }}</H4>
-    <table class="testTable">
-        <tr>
-            <td>Test Id</td>
-            <td>Summary</td>
-            <td>Description/Steps</td>
-            <td>Author</td>
-            <td>Status</td>
-            <td>Last executor</td>
-            <td>Actions</td>
-            <td>Details</td>
-            <td>Delete</td>
-        </tr>
-        {% for test in tests %}
-            <tr class="testRow_{{ test.id }}">
-                <td>{{ test.id }}</td>
-                <td>{{ test.name }}</td>
-                <td><div class="testDescription">{{ test.description }}</div></td>
-                <td>{{ test.author }}</td>
-                <td class="testStatus_{{ test.id }}">{{ test.status }}</td>
-                <td>{{ test.last_executor }}</td>
-                <td>
-                    <button class="passBtn pass_{{ test.id }}"
-                            onclick="setStatus({{ test.id }}, 'PASS')">PASS
-                    </button>
-                    <button class="failBtn fail_{{ test.id }}"
-                            onclick="setStatus({{ test.id }}, 'FAIL')">FAIL
-                    </button>
-                </td>
-                <td>
-                    <button class="editBtn edit_{{ test.id }}" onclick="editTest({{ test.id }})">
-                        Details
-                    </button>
-                </td>
-                <td>
-                    <button class="deleteBtn delete_{{ test.id }}"
-                            onclick="deleteTest({{ test.id }})">
-                        Delete
-                    </button>
-                </td>
-            </tr>
-        {% endfor %}
-    </table>
-    <input type="button" onclick="lazyLoad()" value="load more">
-
-    <h3 class="theEnd" hidden>All tests loaded</h3>
-
+  <div class="wrap">
+    <div class="container">
+      <div class="wBox2">
+        <div class="tableTitle">Test cases <span>(Total {{ count }})</span></div>
+        <div class="testTableBox">
+          <table class="testTable">
+            <thead class="ttHead">
+              <tr class="ttRow">
+                <th>Id</th>
+                <th>Summary</th>
+                <th class="thDes">Description/Steps</th>
+                <th class="thAuthor">Author</th>
+                <th>Status</th>
+                <th class="thLast">Last executor</th>
+                <th></th>
+                <th></th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for test in tests %}
+                <tr class="testRow_{{ test.id }}">
+                  <td>{{ test.id }}</td>
+                  <td>{{ test.name }}</td>
+                  <td class="ttDes"><div class="testDescription">{{ test.description }}</div></td>
+                  <td class="ttAuthor">{{ test.author }}</td>
+                  <td class="ttStatus"><span class="testStatus_{{ test.id }} {{test.status}}">{{ test.status }}</span></td>
+                  <td class="ttLast">{{ test.last_executor }}</td>
+                  <td class="ttPassFail">
+                    <button class="ttPass passBtn pass_{{ test.id }}" onclick="setStatus({{ test.id }}, 'PASS')">PASS</button>
+                    <button class="ttFail failBtn fail_{{ test.id }}" onclick="setStatus({{ test.id }}, 'FAIL')">FAIL</button>
+                  </td>
+                  <td class="ttDetailsBtn">
+                    <button class="showDetailsButton editBtn edit_{{ test.id }}" onclick="editTest({{ test.id }})">Details</button>
+                  </td>
+                  <td class="ttRemBtn">
+                    <button class="ttRem deleteBtn delete_{{ test.id }}" onclick="deleteTest({{ test.id }})">Delete</button>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="loadMore"><input type="button" onclick="lazyLoad()" value="load more"></div>
+      </div>
+    </div>
+  </div>
     <script>
         $(window).scroll(function () {
             if ($(window).scrollTop() + $(window).height() >= $(document).height()) {
@@ -71,6 +67,8 @@
             xhr.onreadystatechange = function () {
                 if (xhr.status == 200) {
                     $('.testStatus_' + testId).text(status);
+                    $('.testStatus_' + testId).removeClass('PASS').removeClass('FAIL');
+                    $('.testStatus_' + testId).addClass(status);
                     console.log(this.responseText)
                 }
             }
@@ -115,7 +113,7 @@
                     end = xhr.response.end;
                     console.log('is the end = ', end);
                     if (end)
-                        $('.theEnd').show();
+                        $('.loadMore').hide();
                     xhr.response.tests.forEach((item, index) => {
                         addRow($('.testTable'), item);
                     })
@@ -129,26 +127,17 @@
             let executor = row.executor == null ? 'None' : row.executor
             let status = row.status == null ? 'None' : row.status
             table.append(`<tr class="testRow_${row.id}">
-                                <td>${row.id}</td>
-                                <td>${row.name}</td>
-                                <td><div class="testDescription">${row.description}</div></td>
-                                <td>${author}</td>
-                                <td class="testStatus_${row.id}">${status}</td>
-                                <td>${executor}</td>
-                                <td><button class="passBtn pass_${row.id}"
-                            onclick="setStatus(${row.id}, 'PASS')">PASS
-                    </button>
-                    <button class="failBtn fail_${row.id}"
-                            onclick="setStatus(${row.id}, 'FAIL')">FAIL
-                    </button></td>
-                                <td><button class="editBtn edit_${row.id}" onclick="editTest(${row.id})">
-                        Details
-                    </button></td>
-                                <td><button class="deleteBtn delete_${row.id}"
-                            onclick="deleteTest(${row.id})">
-                        Delete
-                    </button></td>
-                            </tr>`)
+                <td>${row.id}</td>
+                <td>${row.name}</td>
+                <td><div class="testDescription">${row.description}</div></td>
+                <td>${author}</td>
+                <td class="testStatus_${row.id}">${status}</td>
+                <td>${executor}</td>
+                <td><button class="passBtn pass_${row.id}" onclick="setStatus(${row.id}, 'PASS')">PASS</button>
+                <button class="failBtn fail_${row.id}" onclick="setStatus(${row.id}, 'FAIL')">FAIL</button></td>
+                <td><button class="editBtn edit_${row.id}" onclick="editTest(${row.id})">Details</button></td>
+                <td><button class="deleteBtn delete_${row.id}" onclick="deleteTest(${row.id})">Delete</button></td>
+              </tr>`)
         }
     </script>
 
