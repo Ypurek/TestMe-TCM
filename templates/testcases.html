@@ -5,6 +5,10 @@
 {% block content %}
     <div class="wrap">
         <div class="container">
+            <div class="fileOperations">
+                <input type="file" class="fileUpload" onchange="upload(this.files[0])">
+                <input type="button" value="Download tests" onclick="location.href='{% url 'download' %}'">
+            </div>
             <div class="wBox2">
                 <div class="tableTitle">Test cases <span>(Total {{ count }})</span></div>
                 <div class="testTableBox">
@@ -135,6 +139,17 @@
                 <td><button class="editBtn edit_${row.id}" onclick="editTest(${row.id})">Details</button></td>
                 <td><button class="deleteBtn delete_${row.id}" onclick="deleteTest(${row.id})">Delete</button></td>
               </tr>`)
+        }
+
+        function upload(file){
+            LightAjax.file_upload("{% url 'upload' %}", file, function (status, response){
+                if (status == 201){
+                    document.location.reload();
+                } else {
+                    alert(response);
+                    $('.fileUpload').val('');
+                }
+            })
         }
     </script>
 

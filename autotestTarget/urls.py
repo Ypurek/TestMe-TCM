@@ -18,6 +18,8 @@ urlpatterns = [
     path('tests/<int:test_id>', testnrun.update_test, name='update'),
     path('tests/<int:test_id>/delete', testnrun.delete_test, name='delete'),
     path('tests/<int:test_id>/status', testnrun.update_test_status, name='set_status'),
+    path('tests/upload', testnrun.upload_tests, name='upload'),
+    path('tests/download', testnrun.download_tests, name='download'),
 
     path('lazytest/', testnrun.lazy_load_tests, name='lazy_test'),
     path('lazyrun/', testnrun.lazy_load_runs, name='lazy_run'),

@@ -22,16 +22,21 @@ long waitings and multiple ajax requests
 - Update test case
 - Delete test case
 - Run test case (make it pass or fail)
+- Download test cases to csv file
+- Upload test cases as csv file  
 - List test runs
 - Open page after specific BE delay
 - Open page and wait specific number of ajax requests handled
 - Handle HTTP 500 errors
 
+
 ## Application has:  
 - Web UI
 - Mobile version of web UI
+- coordinates in UI header for location tests   
 - REST services
 - SQLite DB to work with DB without installing 3rd party services
+- Page with different input types to play with
 
 ## Preconditions
 - Python 3.8+

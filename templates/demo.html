@@ -1,60 +1,83 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <div class="wrap wrapFlex">
-    <div class="container">
-      <div class="wBox">
-        <h3>Demo pages</h3>
-        <div class="updateForm demoForm">
-          <div class="wait">
-            <div><input type="number" class="waitPageTime" value="5" min="1" max="100" minlength="1" maxlength="3"></div>
-            <div><a href="javascript:;" class="waitPage">Open page after <span>5</span> seconds</a></div>
-          </div>
-          <div class="wait">
-            <div><input type="number" class="waitAjaxRequests" value="5" min="1" max="10"></div>
-            <div><a href="javascript:;" class="waitAjax">Open page and wait <span>5</span> ajax loaded</a></div>
-          </div>
-          
-          <div class="refresh"><input type="button" class="crash" value="Refresh (Cause crash)"></div>
+    <div class="wrap wrapFlex">
+        <div class="container">
+            <div class="wBox">
+                <h3>Demo pages</h3>
+                <div class="updateForm demoForm">
+                    <div class="wait">
+                        <div><input type="number" class="waitPageTime" value="5" min="1" max="100" minlength="1"
+                                    maxlength="3"></div>
+                        <div><a href="javascript:;" class="waitPage">Open page after <span>5</span> seconds</a></div>
+                    </div>
+                    <div class="wait">
+                        <div><input type="number" class="waitAjaxRequests" value="5" min="1" max="10"></div>
+                        <div><a href="javascript:;" class="waitAjax">Open page and wait <span>5</span> ajax loaded</a>
+                        </div>
+                    </div>
+
+                    <div class="refresh"><input type="button" class="crash" value="Refresh (Cause crash)"></div>
+                    <div>
+                        <input type="checkbox" value="check me" id="check1">
+                        <label for="check1">check me</label>
+                        <input type="checkbox" value="no! check me" id="check2">
+                        <label for="check2">no! check me</label>
+                        <input type="color" value="color me me">
+                        <input type="date" value="date me">
+                        <form>
+                            <input type="radio" value="1" id="radio1" name="demo">
+                            <label for="radio1">hello</label>
+                            <input type="radio" value="2" id="radio2" name="demo">
+                            <label for="radio2">world</label>
+                        </form>
+                        <input type="range" value="range me" min="0" , max="100" step="1">
+                        <select>
+                            <option value="1">Hello</option>
+                            <option value="2">World</option>
+                            <option value="3">Default</option>
+                        </select>
+                    </div>
+
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 
     <script>
-      $('.waitPageTime').blur(function() {
-        let waitPageTime = $(this).val();
-        if(waitPageTime > 100) {
-          waitPageTime = 100
-        } else if (waitPageTime < 1) {
-          waitPageTime = 1
-        }
-        $(this).val(waitPageTime)
-        $('.waitPage span').html(waitPageTime)
-      });
-      $('.waitAjaxRequests').blur(function() {
-        let waitAjaxRequests = $(this).val();
-        if(waitAjaxRequests > 100) {
-          waitAjaxRequests = 100
-        } else if (waitAjaxRequests < 1) {
-          waitAjaxRequests = 1
-        }
-        $(this).val(waitAjaxRequests)
-        $('.waitAjax span').html(waitAjaxRequests)
-      });
-      $('.waitPage').click(function (event) {
-          time = $('.waitPageTime').val();
-          window.location.href = "{% url 'wait_page' %}?time=" + time;
-      });
+        $('.waitPageTime').blur(function () {
+            let waitPageTime = $(this).val();
+            if (waitPageTime > 100) {
+                waitPageTime = 100
+            } else if (waitPageTime < 1) {
+                waitPageTime = 1
+            }
+            $(this).val(waitPageTime)
+            $('.waitPage span').html(waitPageTime)
+        });
+        $('.waitAjaxRequests').blur(function () {
+            let waitAjaxRequests = $(this).val();
+            if (waitAjaxRequests > 100) {
+                waitAjaxRequests = 100
+            } else if (waitAjaxRequests < 1) {
+                waitAjaxRequests = 1
+            }
+            $(this).val(waitAjaxRequests)
+            $('.waitAjax span').html(waitAjaxRequests)
+        });
+        $('.waitPage').click(function (event) {
+            time = $('.waitPageTime').val();
+            window.location.href = "{% url 'wait_page' %}?time=" + time;
+        });
 
-      $('.waitAjax').click(function (event) {
-          time = $('.waitAjaxRequests').val();
-          window.location.href = "{% url 'wait_ajax' %}?time=" + time;
-      });
+        $('.waitAjax').click(function (event) {
+            time = $('.waitAjaxRequests').val();
+            window.location.href = "{% url 'wait_ajax' %}?time=" + time;
+        });
 
-      $('.crash').click(function (event) {
-          window.location.href = "{% url 'crash' %}";
-      });
+        $('.crash').click(function (event) {
+            window.location.href = "{% url 'crash' %}";
+        });
     </script>
 
 {% endblock %}
