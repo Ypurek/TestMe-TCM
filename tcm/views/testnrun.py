@@ -8,6 +8,7 @@ from .decorators import allowed_methods
 import json
 import csv
 import os
+import uuid
 
 
 def get_stats():
@@ -192,24 +193,27 @@ def upload_tests(request):
 
 
 def handle_uploaded_file(f, user):
-    file_name = 'file.csv'
-    with open(file_name, 'wb+') as file:
-        for chunk in f.chunks():
-            file.write(chunk)
-    with open(file_name, 'r') as file:
-        reader = csv.reader(file)
-        headers = next(reader)
-        if len(headers) != 2 or headers[0].lower().strip() != 'summary' or headers[1].lower().strip() != 'description':
-            raise TypeError
-        tests = list()
-        for row in reader:
-            form = TestCaseForm({'name': row[0], 'description': row[1], 'author': user})
-            if not form.is_valid():
-                raise NotImplementedError
-            tests.append(form.save(commit=False))
-        TestCase.objects.bulk_create(tests)
-    if os.path.exists(file_name):
-        os.remove(file_name)
+    file_data = b''
+    for chunk in f.chunks():
+        file_data += chunk
+        # file_name = str(str(uuid.uuid4()) + '.csv')
+        # with open(file_name, 'wb+') as file:
+        #     for chunk in f.chunks():
+        #         file.write(chunk)
+        # with open(file_name, 'r') as file:
+    reader = csv.reader(file_data.decode('utf-8').splitlines())
+    headers = next(reader)
+    if len(headers) != 2 or headers[0].lower().strip() != 'summary' or headers[1].lower().strip() != 'description':
+        raise TypeError
+    tests = list()
+    for row in reader:
+        form = TestCaseForm({'name': row[0], 'description': row[1], 'author': user})
+        if not form.is_valid():
+            raise NotImplementedError
+        tests.append(form.save(commit=False))
+    TestCase.objects.bulk_create(tests)
+# if os.path.exists(file_name):
+#     os.remove(file_name)
 
 
 @login_required

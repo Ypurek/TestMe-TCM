@@ -3,131 +3,135 @@
 {% block title %}Test Cases{% endblock %}
 
 {% block content %}
-    <div class="wrap">
-        <div class="container">
-            <div class="fileOperations">
-                <input type="file" class="fileUpload" onchange="upload(this.files[0])">
-                <input type="button" value="Download tests" onclick="location.href='{% url 'download' %}'">
-            </div>
-            <div class="wBox2">
-                <div class="tableTitle">Test cases <span>(Total {{ count }})</span></div>
-                <div class="testTableBox">
-                    <table class="testTable">
-                        <thead class="ttHead">
-                        <tr class="ttRow">
-                            <th>Id</th>
-                            <th>Summary</th>
-                            <th class="thDes">Description/Steps</th>
-                            <th class="thAuthor">Author</th>
-                            <th>Status</th>
-                            <th class="thLast">Last executor</th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for test in tests %}
-                            <tr class="testRow_{{ test.id }}">
-                                <td>{{ test.id }}</td>
-                                <td>{{ test.name }}</td>
-                                <td class="ttDes">
-                                    <div class="testDescription">{{ test.description }}</div>
-                                </td>
-                                <td class="ttAuthor">{{ test.author }}</td>
-                                <td class="ttStatus"><span
-                                        class="testStatus_{{ test.id }} {{ test.status }}">{{ test.status }}</span></td>
-                                <td class="ttLast">{{ test.last_executor }}</td>
-                                <td class="ttPassFail">
-                                    <button class="ttPass passBtn pass_{{ test.id }}"
-                                            onclick="setStatus({{ test.id }}, 'PASS')">PASS
-                                    </button>
-                                    <button class="ttFail failBtn fail_{{ test.id }}"
-                                            onclick="setStatus({{ test.id }}, 'FAIL')">FAIL
-                                    </button>
-                                </td>
-                                <td class="ttDetailsBtn">
-                                    <button class="showDetailsButton editBtn edit_{{ test.id }}"
-                                            onclick="editTest({{ test.id }})">Details
-                                    </button>
-                                </td>
-                                <td class="ttRemBtn">
-                                    <button class="ttRem deleteBtn delete_{{ test.id }}"
-                                            onclick="deleteTest({{ test.id }})">Delete
-                                    </button>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                <div class="loadMore"><input type="button" onclick="lazyLoad()" value="load more"></div>
-            </div>
+<div class="wrap">
+  <div class="container">
+    <div class="wBox2">
+      <div class="tableTitleWrap">
+        <div class="tableTitle">Test cases <span>(Total {{ count }})</span></div>
+        <div class="fileOperations">
+          <div class="fileUploadBox">
+            <a href="javascript:;" class="fileUploadBtn">Upload tests</a>
+            <input type="file" class="fileUpload" onchange="upload(this.files[0])">
+          </div>
+          <div class="fileDownload">
+            <input type="button" value="Download tests" onclick="location.href='{% url 'download' %}'">
+          </div>
         </div>
+      </div>
+      <div class="testTableBox">
+        <table class="testTable">
+          <thead class="ttHead">
+            <tr class="ttRow">
+              <th>Id</th>
+              <th>Summary</th>
+              <th class="thDes">Description/Steps</th>
+              <th class="thAuthor">Author</th>
+              <th>Status</th>
+              <th class="thLast">Last executor</th>
+              <th></th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for test in tests %}
+            <tr class="testRow_{{ test.id }}">
+              <td>{{ test.id }}</td>
+              <td>{{ test.name }}</td>
+              <td class="ttDes">
+                <div class="testDescription">{{ test.description }}</div>
+              </td>
+              <td class="ttAuthor">{{ test.author }}</td>
+              <td class="ttStatus"><span class="testStatus_{{ test.id }} {{ test.status }}">{{ test.status }}</span></td>
+              <td class="ttLast">{{ test.last_executor }}</td>
+              <td class="ttPassFail">
+                <button class="ttPass passBtn pass_{{ test.id }}" onclick="setStatus({{ test.id }}, 'PASS')">PASS
+                </button>
+                <button class="ttFail failBtn fail_{{ test.id }}" onclick="setStatus({{ test.id }}, 'FAIL')">FAIL
+                </button>
+              </td>
+              <td class="ttDetailsBtn">
+                <button class="showDetailsButton editBtn edit_{{ test.id }}" onclick="editTest({{ test.id }})">Details
+                </button>
+              </td>
+              <td class="ttRemBtn">
+                <button class="ttRem deleteBtn delete_{{ test.id }}" onclick="deleteTest({{ test.id }})">Delete
+                </button>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="loadMore"><input type="button" onclick="lazyLoad()" value="load more"></div>
     </div>
-    <script>
-        $(window).scroll(function () {
-            if ($(window).scrollTop() + $(window).height() >= $(document).height()) {
-                lazyLoad();
-            }
+  </div>
+</div>
+<script>
+  $(window).scroll(function() {
+    if ($(window).scrollTop() + $(window).height() >= $(document).height()) {
+      lazyLoad();
+    }
+  });
+
+  function setStatus(testId, status) {
+    let url = "{% url 'set_status' 12345 %}".replace(/12345/, testId);
+    let payload = {
+      'status': status
+    };
+    LightAjax.post(url, JSON.stringify(payload), function(xhr_status, payload) {
+      if (xhr_status == 200) {
+        $('.testStatus_' + testId).text(status);
+        $('.testStatus_' + testId).removeClass('PASS').removeClass('FAIL');
+        $('.testStatus_' + testId).addClass(status);
+        console.log('test ' + testId + ' deleted');
+      }
+    });
+  }
+
+  function deleteTest(testId) {
+    let url = "{% url 'delete' 12345 %}".replace(/12345/, testId);
+    LightAjax.delete(url, function(status, response) {
+      if (status == 200) {
+        $('.testRow_' + testId).slideUp(200, function() {
+          $(this).remove();
         });
+      }
+    });
+  }
 
-        function setStatus(testId, status) {
-            let url = "{% url 'set_status' 12345 %}".replace(/12345/, testId);
-            let payload = {'status': status};
-            LightAjax.post(url, JSON.stringify(payload), function (xhr_status, payload) {
-                if (xhr_status == 200) {
-                    $('.testStatus_' + testId).text(status);
-                    $('.testStatus_' + testId).removeClass('PASS').removeClass('FAIL');
-                    $('.testStatus_' + testId).addClass(status);
-                    console.log('test ' + testId + ' deleted');
-                }
-            });
-        }
+  function editTest(testId) {
+    let url = "{% url 'update' 12345 %}".replace(/12345/, testId);
+    window.location.href = url;
+  }
 
-        function deleteTest(testId) {
-            let url = "{% url 'delete' 12345 %}".replace(/12345/, testId);
-            LightAjax.delete(url, function (status, response) {
-                if (status == 200) {
-                    $('.testRow_' + testId).slideUp(200, function () {
-                        $(this).remove();
-                    });
-                }
-            });
-        }
+  var page = 1;
+  var end = {% if end %} true {% else %} false {% endif %};
 
-        function editTest(testId) {
-            let url = "{% url 'update' 12345 %}".replace(/12345/, testId);
-            window.location.href = url;
-        }
+  function lazyLoad() {
+    if (end)
+      return;
+    let xhr = new XMLHttpRequest();
+    let url = "{% url 'lazy_test' %}?page=" + page;
+    LightAjax.get(url, function(status, response) {
+      if (status == 200) {
+        console.log('page = ', ++page);
+        end = xhr.response.end;
+        console.log('is the end = ', end);
+        if (end)
+          $('.loadMore').hide();
+        xhr.response.tests.forEach((item, index) => {
+          addRow($('.testTable'), item);
+        });
+      }
+    });
+  }
 
-        var page = 1;
-        var end = {% if end %} true {% else %} false {% endif %};
-
-        function lazyLoad() {
-            if (end)
-                return;
-            let xhr = new XMLHttpRequest();
-            let url = "{% url 'lazy_test' %}?page=" + page;
-            LightAjax.get(url, function (status, response) {
-                if (status == 200) {
-                    console.log('page = ', ++page);
-                    end = xhr.response.end;
-                    console.log('is the end = ', end);
-                    if (end)
-                        $('.loadMore').hide();
-                    xhr.response.tests.forEach((item, index) => {
-                        addRow($('.testTable'), item);
-                    });
-                }
-            });
-        }
-
-        function addRow(table, row) {
-            let author = row.author == null ? 'None' : row.author
-            let executor = row.executor == null ? 'None' : row.executor
-            let status = row.status == null ? 'None' : row.status
-            table.append(`<tr class="testRow_${row.id}">
+  function addRow(table, row) {
+    let author = row.author == null ? 'None' : row.author
+    let executor = row.executor == null ? 'None' : row.executor
+    let status = row.status == null ? 'None' : row.status
+    table.append(`<tr class="testRow_${row.id}">
                 <td>${row.id}</td>
                 <td>${row.name}</td>
                 <td><div class="testDescription">${row.description}</div></td>
@@ -139,18 +143,18 @@
                 <td><button class="editBtn edit_${row.id}" onclick="editTest(${row.id})">Details</button></td>
                 <td><button class="deleteBtn delete_${row.id}" onclick="deleteTest(${row.id})">Delete</button></td>
               </tr>`)
-        }
+  }
 
-        function upload(file){
-            LightAjax.file_upload("{% url 'upload' %}", file, function (status, response){
-                if (status == 201){
-                    document.location.reload();
-                } else {
-                    alert(response);
-                    $('.fileUpload').val('');
-                }
-            })
-        }
-    </script>
+  function upload(file) {
+    LightAjax.file_upload("{% url 'upload' %}", file, function(status, response) {
+      if (status == 201) {
+        document.location.reload();
+      } else {
+        alert(response);
+        $('.fileUpload').val('');
+      }
+    })
+  }
+</script>
 
 {% endblock %}

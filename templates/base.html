@@ -1,3 +1,4 @@
+<!-- templates/base.html -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,10 +8,12 @@
     {% load static %}
     <script type='text/javascript' src="{% static 'assets/js/jquery-3.5.1.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'assets/js/js.cookie-2.2.1.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'assets/js/script.js' %}"></script>
+    <script type="text/javascript" src="{% static 'assets/js/zebra_datepicker.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'assets/js/lightAjax.js' %}"></script>
+    <script type="text/javascript" src="{% static 'assets/js/script.js' %}"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="{% static 'assets/css/zebra_datepicker.min.css' %}" rel="stylesheet">
     <link href="{% static 'assets/css/style.css' %}" rel="stylesheet">
 </head>
 <body>
@@ -48,9 +51,6 @@
     <main class="mainLogin">
 {% endif %}
 
-{% block content %}
-{% endblock %}
-</main>
 {% if user.is_authenticated %}
     <script>
         $(document).ready(function () {
@@ -65,8 +65,12 @@
             }
 
         });
-
     </script>
 {% endif %}
+
+{% block content %}
+{% endblock %}
+</main>
+
 </body>
 </html>

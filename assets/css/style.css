@@ -224,5 +224,42 @@ input[type=number]::-webkit-outer-spin-button {opacity: 1;}
 	input[type=number] {padding:0 0 0 5px; text-align:left;}
 }
 
+.fileUploadBox {padding:15px 0 0;}
+.fileDownload {padding:15px 0 0;}
+@media(min-width:768px){
+	.tableTitleWrap {width:100%; display:flex; flex-flow:row nowrap; justify-content:space-between; align-items:center;}
+	.fileOperations {display:flex; flex-flow:row nowrap; align-items:center;}
+	.fileUploadBox {padding:0 20px;}
+	.fileDownload {padding:0;}
+}
+
 .ajaxResponses {padding:15px 0 0;}
 .ajaxResponses p {padding:0 0 5px; margin:0;}
+
+.demoControls {padding:25px 0 0;}
+.demoCheckBox {padding:25px 0 5px;}
+.demoCheckBox input {margin-right:3px; position:relative; top:2px;}
+.demoColor {padding:10px 0 0;}
+.demoDate {padding:10px 0 0;}
+.demoRadio {padding:25px 0 0;}
+.demoRadio input {margin-right:6px; position:relative; top:2px;}
+.demoRange {padding:20px 0 0;}
+.demoSelect {padding:25px 0 0;}
+.demoSelect2 {padding:25px 0 0;}
+.demoSelect2 input {display:none;}
+.demoSelect2 ul {list-style:none;}
+.selectValueBox {position:relative; cursor:pointer;}
+.selectValueBox:after {content:''; width:0; height:0; border-left:5px solid rgba(0,0,0,0); border-right:5px solid rgba(0,0,0,0); border-top:5px solid #000; position:absolute; top:11px; right:11px;}
+.selectValue {max-height:28px; line-height:28px; padding:0 10px; border:1px solid #ddd;}
+.selectValueBox ul {background:#fff; width:100%; line-height:28px; border:1px solid #ddd; border-top:0; position:absolute; left:0; top:27px; z-index:2; display:none;}
+.selectValueBox ul li {width:100%; padding:0 10px;}
+
+.demoDateZebra {padding:10px 0 0; position:relative;}
+
+input[type="date"] {background:fff !important; width:100%; height:55px; line-height:53px; padding:0 15px; border:1px solid #ddd; font-size:14px; font-family:'Open Sans', sans-serif; font-weight:600;}
+input[type="color"] {background:none !important; width:40px; height:40px; padding:0 !important; border:0 !important; outline:none !important;}
+
+.fileUploadBox input {display:none;}
+.fileUploadBtn {background:#2582e7; height:40px; line-height:40px; padding:0 30px; border-radius:4px; color:#fff !important; font-size:14px; font-weight:600; text-align:center; text-transform:uppercase; display:inline-block;}
+	
+.Zebra_DatePicker_Icon_Wrapper {width:100%; display:block;}
