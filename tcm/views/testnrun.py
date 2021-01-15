@@ -89,7 +89,7 @@ def new_test(request):
 
 
 @login_required
-@allowed_methods('POST')
+@allowed_methods('GET', 'POST')
 def update_test(request, test_id: int):
     test = get_object_or_404(TestCase, id=test_id)
     form = UpdateTestCaseForm(request.POST or None, instance=test)
