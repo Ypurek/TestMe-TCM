@@ -17,6 +17,9 @@
         </div>
 
         <div class="refresh"><input type="button" class="crash" value="Refresh (Cause crash)"></div>
+
+        <div class="refresh"><input type="button" class="newPage" value="Ctrl + click (New page)"></div>
+
         <div class="demoControls">
           <div class="demoSelect">
             <select>
@@ -64,6 +67,15 @@
 </div>
 
 <script>
+  $('.newPage').click(function (e){
+     if (e.ctrlKey) {
+         let tab = window.open(window.location.href, '_blank');
+         tab.focus();
+     } else {
+         alert('You have to press Ctrl button');
+     }
+  });
+
   $('.waitPageTime').blur(function() {
     let waitPageTime = $(this).val();
     if (waitPageTime > 100) {
