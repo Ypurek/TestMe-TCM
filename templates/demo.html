@@ -67,6 +67,10 @@
 </div>
 
 <script>
+  $(document).ready(function () {
+      console.error("Hi! I'm the ERROR. Try to catch me");
+  });
+
   $('.newPage').click(function (e){
      if (e.ctrlKey) {
          let tab = window.open(window.location.href, '_blank');
