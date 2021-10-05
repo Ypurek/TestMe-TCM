@@ -40,7 +40,7 @@ long waitings and multiple ajax requests
 
 ## Preconditions
 - Python 3.8+
-- Install Django using `pip install -r requirements.txt` or `pip install django==3.1.4`
+- Install Django using `pip install -r requirements.txt`
 - Free network port 8000
 
 ## How to run
