@@ -48,4 +48,13 @@ long waitings and multiple ajax requests
 2. Navigate to project folder
 3. Execute command: `python manage.py runserver`  
 
-Server will be started at http://127.0.0.1:8000
+Server will be started at http://127.0.0.1:8000  
+
+## Default users
+- alice
+- bob
+- charlie  
+
+password: _Qamania123_
+
+
