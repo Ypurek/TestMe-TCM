@@ -1,8 +1,10 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from tcm.views import testnrun, auth, demo
 
 urlpatterns = [
+    path('api/', include('api.urls')),
+
     path('admin/', admin.site.urls),
 
     path('register/', auth.register, name='register'),
