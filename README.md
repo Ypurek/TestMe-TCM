@@ -28,7 +28,10 @@ long waitings and multiple ajax requests
 - Open page after specific BE delay
 - Open page and wait specific number of ajax requests handled
 - Handle HTTP 500 errors
+- <span style="color:red">NEW!</span> Rest API for API and performance testing
 
+## API
+[Api doc in postman](https://documenter.getpostman.com/view/2037649/UV5TEe6x)
 
 ## Application has:  
 - Web UI

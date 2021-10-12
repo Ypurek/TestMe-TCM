@@ -9,8 +9,6 @@ def allowed_methods(*methods):
             else:
                 return HttpResponseNotAllowed(list(methods))
 
-
-
         return wrapper
 
     return intern_decorator

@@ -29,13 +29,11 @@ def get_stats():
     return stats
 
 
-@login_required
 @allowed_methods('GET')
 def dashboard(request):
     return render(request, 'home.html', context=get_stats())
 
 
-@login_required
 @allowed_methods('GET')
 def test_cases(request):
     tc_list = TestCase.objects.prefetch_related('runs').all()
@@ -59,7 +57,6 @@ def test_cases(request):
                                                       'end': len(tc_list) <= PAGE_SIZE})
 
 
-@login_required
 @allowed_methods('GET')
 def test_runs(request):
     payload = dict()
@@ -71,7 +68,6 @@ def test_runs(request):
     return render(request, 'testruns.html', context=payload)
 
 
-@login_required
 @allowed_methods('GET', 'POST')
 def new_test(request):
     if request.method == "POST":
@@ -88,7 +84,6 @@ def new_test(request):
     return render(request, "newtest.html", {"form": form})
 
 
-@login_required
 @allowed_methods('GET', 'POST')
 def update_test(request, test_id: int):
     test = get_object_or_404(TestCase, id=test_id)
@@ -102,7 +97,6 @@ def update_test(request, test_id: int):
                                                'test_runs': test.runs.count()})
 
 
-@login_required
 @allowed_methods('POST')
 def update_test_status(request, test_id: int):
     body = json.loads(request.body)
@@ -113,7 +107,6 @@ def update_test_status(request, test_id: int):
     return JsonResponse({'runId': run.id}, status=200)
 
 
-@login_required
 @allowed_methods('DELETE')
 def delete_test(request, test_id: int):
     test = get_object_or_404(TestCase, id=test_id)
@@ -121,13 +114,11 @@ def delete_test(request, test_id: int):
     return JsonResponse({'deleted': True}, status=200)
 
 
-@login_required
 @allowed_methods('GET')
 def refresh_stats(request):
     return JsonResponse(get_stats(), status=200)
 
 
-@login_required
 @allowed_methods('GET')
 def lazy_load_tests(request):
     current_page = int(request.GET.get('page'))
@@ -154,7 +145,6 @@ def lazy_load_tests(request):
                          'end': the_end}, status=200)
 
 
-@login_required
 @allowed_methods('GET')
 def lazy_load_runs(request):
     current_page = int(request.GET.get('page'))
@@ -176,7 +166,6 @@ def runs_2_json(runs: list):
     return result
 
 
-@login_required
 @allowed_methods('POST')
 def upload_tests(request):
     if request.FILES.get('file') is None:
@@ -212,6 +201,8 @@ def handle_uploaded_file(f, user):
             raise NotImplementedError
         tests.append(form.save(commit=False))
     TestCase.objects.bulk_create(tests)
+
+
 # if os.path.exists(file_name):
 #     os.remove(file_name)
 

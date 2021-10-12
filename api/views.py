@@ -8,6 +8,7 @@ from django.shortcuts import redirect
 import json
 from tcm.models import TestCase, TestRun
 from tcm.views.testnrun import get_stats
+from django.core.exceptions import ValidationError
 
 
 @csrf_exempt
@@ -36,18 +37,18 @@ def api_logout(request):
     return HttpResponse('', status=200)
 
 
-def api_tests(request):
-    page = request.GET.get('page')
-    size = request.GET.get('size')
-    if page is None or size is None:
-        page, size = 0, 20
-    elif page.isnumeric() and size.isnumeric():
-        page, size = int(page), int(size)
+@allowed_methods('GET')
+def api_test_cases(request):
+    page = request.GET.get('page', '0')
+    size = request.GET.get('size', '20')
+    if page.isnumeric() and size.isnumeric():
+        p = int(page)
+        s = int(size)
     else:
-        return JsonResponse({'error': 'bad query params'}, status=400)
+        p, s = 0, 20
     tc_list = TestCase.objects.all()
     results = list()
-    for tc in tc_list[page:size]:
+    for tc in tc_list[p * s:(p + 1) * s]:
         if tc.runs.count() > 0:
             status = tc.runs.latest('timestamp').status
             executor = tc.runs.latest('timestamp').executor
@@ -59,14 +60,14 @@ def api_tests(request):
             'description': tc.description,
             'author': tc.author.username,
             'status': status,
-            'executor': executor.username
+            'executor': None if executor is None else executor.username
         })
-    return JsonResponse({'page': page, 'size': size, 'total': len(tc_list), 'tests': results}, status=200)
+    return JsonResponse({'page': p, 'size': s, 'total': len(tc_list), 'tests': results}, status=200)
 
 
 @allowed_methods('GET', 'PUT', 'PATCH', 'DELETE')
-def api_test(request, id: int):
-    test = TestCase.objects.filter(id=id)
+def api_test(request, test_id: int):
+    test = TestCase.objects.filter(id=test_id)
     if len(test) == 0:
         return HttpResponse('', status=404)
 
@@ -129,12 +130,12 @@ def api_test(request, id: int):
 
 
 @allowed_methods('POST')
-def update_test_status(request, id: int):
+def update_test_status(request, test_id: int):
     try:
         body = json.loads(request.body)
     except json.decoder.JSONDecodeError:
         return JsonResponse({'error': 'bad input data'}, status=400)
-    test = TestCase.objects.filter(id=id)
+    test = TestCase.objects.filter(id=test_id)
     if len(test) == 0:
         return JsonResponse({'error': 'test not found'}, status=404)
     run = TestRun.objects.create(test_case=test[0], status=body['status'], executor=request.user)
@@ -144,3 +145,25 @@ def update_test_status(request, id: int):
 @allowed_methods('GET')
 def api_stats(request):
     return JsonResponse(get_stats(), status=200)
+
+
+@allowed_methods('POST')
+def api_new_test(request):
+    try:
+        body = json.loads(request.body)
+    except json.decoder.JSONDecodeError:
+        return JsonResponse({'error': 'bad input data'}, status=400)
+
+    match body:
+        case {'name': str(), 'description': str()}:
+            test = TestCase(name=body['name'],
+                            description=body['description'],
+                            author=request.user)
+            try:
+                test.validate_unique()
+                test.save()
+                return JsonResponse({'test_id': test.id}, status=201)
+            except ValidationError:
+                return JsonResponse({'error': 'test with such name already exists'}, status=400)
+
+    return JsonResponse({'error': 'bad input data'}, status=400)
