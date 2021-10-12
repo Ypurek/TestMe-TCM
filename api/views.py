@@ -1,17 +1,16 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.middleware.csrf import get_token
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import login, logout, authenticate
 from tcm.views.decorators import allowed_methods
-from django.shortcuts import redirect
-import json
 from tcm.models import TestCase, TestRun
 from tcm.views.testnrun import get_stats
 from django.core.exceptions import ValidationError
+from api.decorators import auth_required
+import json
 
 
-@csrf_exempt
 def get_csrf_token(request):
     return HttpResponse(get_token(request), status=200)
 
@@ -37,6 +36,7 @@ def api_logout(request):
     return HttpResponse('', status=200)
 
 
+@auth_required
 @allowed_methods('GET')
 def api_test_cases(request):
     page = request.GET.get('page', '0')
@@ -65,6 +65,7 @@ def api_test_cases(request):
     return JsonResponse({'page': p, 'size': s, 'total': len(tc_list), 'tests': results}, status=200)
 
 
+@auth_required
 @allowed_methods('GET', 'PUT', 'PATCH', 'DELETE')
 def api_test(request, test_id: int):
     test = TestCase.objects.filter(id=test_id)
@@ -142,6 +143,7 @@ def update_test_status(request, test_id: int):
     return JsonResponse({'runId': run.id}, status=200)
 
 
+@auth_required
 @allowed_methods('GET')
 def api_stats(request):
     return JsonResponse(get_stats(), status=200)
