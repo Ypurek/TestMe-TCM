@@ -86,7 +86,7 @@ def api_test(request, test_id: int):
                 'description': test.description,
                 'author': test.author.username,
                 'status': status,
-                'executor': executor.username
+                'executor': None if executor is None else executor.username
             }, status=200)
         case 'PUT':
             try:
