@@ -42,7 +42,7 @@ long waitings and multiple ajax requests
 - Page with different input types to play with
 
 ## Preconditions
-- Python 3.8+
+- Python 3.10+
 - Install Django using `pip install -r requirements.txt`
 - Free network port 8000
 
