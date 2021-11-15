@@ -106,7 +106,7 @@ def api_test(request, test_id: int):
                         'author': test.author.username,
                     }, status=200)
                 case _:
-                    return JsonResponse({'error': 'bad input data'}, status=200)
+                    return JsonResponse({'error': 'bad input data'}, status=400)
         case 'PATCH':
             try:
                 body = json.loads(request.body)
@@ -125,7 +125,7 @@ def api_test(request, test_id: int):
                 'author': test.author.username,
             }, status=200)
         case 'DELETE':
-            test = get_object_or_404(TestCase, id=id)
+            test = get_object_or_404(TestCase, id=test_id)
             test.delete()
             return JsonResponse({'status': 'deleted'}, status=200)
 
