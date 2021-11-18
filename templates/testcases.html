@@ -111,16 +111,15 @@
   function lazyLoad() {
     if (end)
       return;
-    let xhr = new XMLHttpRequest();
     let url = "{% url 'lazy_test' %}?page=" + page;
     LightAjax.get(url, function(status, response) {
       if (status == 200) {
         console.log('page = ', ++page);
-        end = xhr.response.end;
+        end = response.end;
         console.log('is the end = ', end);
         if (end)
           $('.loadMore').hide();
-        xhr.response.tests.forEach((item, index) => {
+        response.tests.forEach((item, index) => {
           addRow($('.testTable'), item);
         });
       }
@@ -134,14 +133,14 @@
     table.append(`<tr class="testRow_${row.id}">
                 <td>${row.id}</td>
                 <td>${row.name}</td>
-                <td><div class="testDescription">${row.description}</div></td>
-                <td>${author}</td>
-                <td class="testStatus_${row.id}">${status}</td>
-                <td>${executor}</td>
-                <td><button class="passBtn pass_${row.id}" onclick="setStatus(${row.id}, 'PASS')">PASS</button>
-                <button class="failBtn fail_${row.id}" onclick="setStatus(${row.id}, 'FAIL')">FAIL</button></td>
-                <td><button class="editBtn edit_${row.id}" onclick="editTest(${row.id})">Details</button></td>
-                <td><button class="deleteBtn delete_${row.id}" onclick="deleteTest(${row.id})">Delete</button></td>
+                <td class="ttDes"><div class="testDescription">${row.description}</div></td>
+                <td class="ttAuthor">${author}</td>
+                <td class="ttStatus"><span class="testStatus_${row.id} ${status}">${status}></span></td>
+                <td class="ttLast">${executor}</td>
+                <td class="ttPassFail"><button class="ttPass passBtn pass_${row.id}" onclick="setStatus(${row.id}, 'PASS')">PASS</button>
+                <button class="ttFail failBtn fail_${row.id}" onclick="setStatus(${row.id}, 'FAIL')">FAIL</button></td>
+                <td class="ttDetailsBtn"><button class="showDetailsButton editBtn edit_${row.id}" onclick="editTest(${row.id})">Details</button></td>
+                <td class="ttRemBtn"><button class="ttRem deleteBtn delete_${row.id}" onclick="deleteTest(${row.id})">Delete</button></td>
               </tr>`)
   }
 

@@ -146,7 +146,7 @@ def lazy_load_tests(request):
             'id': tc.id,
             'name': tc.name,
             'description': tc.description,
-            'author': tc.author,
+            'author': tc.author.username,
             'status': status,
             'executor': executor
         })
