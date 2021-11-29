@@ -19,16 +19,16 @@ def get_csrf_token(request):
 @allowed_methods('POST')
 def api_login(request):
     body = json.loads(request.body)
-    match body:
-        case {'username': username, 'password': password}:
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                login(request, user)
-                return HttpResponse('', status=200)
-            else:
-                return JsonResponse({'error': 'username or password not correct'}, status=401)
-        case _:
-            return JsonResponse({'error': 'bad input data'}, status=400)
+    username, password = body.get('username'), body.get('password')
+    if username is None or password is None:
+        return JsonResponse({'error': 'bad input data'}, status=400)
+
+    user = authenticate(username=username, password=password)
+    if user is not None:
+        login(request, user)
+        return HttpResponse('', status=200)
+    else:
+        return JsonResponse({'error': 'username or password not correct'}, status=401)
 
 
 def api_logout(request):
@@ -73,61 +73,59 @@ def api_test(request, test_id: int):
         return HttpResponse('', status=404)
 
     test = test[0]
-    match request.method:
-        case 'GET':
-            if test.runs.count() > 0:
-                status = test.runs.latest('timestamp').status
-                executor = test.runs.latest('timestamp').executor
-            else:
-                status, executor = 'Norun', None
-            return JsonResponse({
-                'id': test.id,
-                'name': test.name,
-                'description': test.description,
-                'author': test.author.username,
-                'status': status,
-                'executor': None if executor is None else executor.username
-            }, status=200)
-        case 'PUT':
-            try:
-                body = json.loads(request.body)
-            except json.decoder.JSONDecodeError:
-                return JsonResponse({'error': 'bad input data'}, status=400)
-            match body:
-                case {'name': str(), 'description': str()}:
-                    test.name = body['name']
-                    test.description = body['description']
-                    test.author = request.user
-                    test.save()
-                    return JsonResponse({
-                        'id': test.id,
-                        'name': test.name,
-                        'description': test.description,
-                        'author': test.author.username,
-                    }, status=200)
-                case _:
-                    return JsonResponse({'error': 'bad input data'}, status=400)
-        case 'PATCH':
-            try:
-                body = json.loads(request.body)
-            except json.decoder.JSONDecodeError:
-                return JsonResponse({'error': 'bad input data'}, status=400)
-            if body.get('name') is not None:
-                test.name = body.get('name')
-            if body.get('description') is not None:
-                test.description = body.get('description')
-            test.author = request.user
-            test.save()
-            return JsonResponse({
-                'id': test.id,
-                'name': test.name,
-                'description': test.description,
-                'author': test.author.username,
-            }, status=200)
-        case 'DELETE':
-            test = get_object_or_404(TestCase, id=test_id)
-            test.delete()
-            return JsonResponse({'status': 'deleted'}, status=200)
+    if request.method == 'GET':
+        if test.runs.count() > 0:
+            status = test.runs.latest('timestamp').status
+            executor = test.runs.latest('timestamp').executor
+        else:
+            status, executor = 'Norun', None
+        return JsonResponse({
+            'id': test.id,
+            'name': test.name,
+            'description': test.description,
+            'author': test.author.username,
+            'status': status,
+            'executor': None if executor is None else executor.username
+        }, status=200)
+    elif request.method == 'PUT':
+        try:
+            body = json.loads(request.body)
+        except json.decoder.JSONDecodeError:
+            return JsonResponse({'error': 'bad input data'}, status=400)
+        if body.get('name') is None or body.get('description') is None:
+            return JsonResponse({'error': 'bad input data'}, status=400)
+
+        test.name = body['name']
+        test.description = body['description']
+        test.author = request.user
+        test.save()
+        return JsonResponse({
+            'id': test.id,
+            'name': test.name,
+            'description': test.description,
+            'author': test.author.username,
+        }, status=200)
+    elif request.method == 'PATCH':
+        try:
+            body = json.loads(request.body)
+        except json.decoder.JSONDecodeError:
+            return JsonResponse({'error': 'bad input data'}, status=400)
+        if body.get('name') is not None:
+            test.name = body.get('name')
+        if body.get('description') is not None:
+            test.description = body.get('description')
+        test.author = request.user
+        test.save()
+        return JsonResponse({
+            'id': test.id,
+            'name': test.name,
+            'description': test.description,
+            'author': test.author.username,
+        }, status=200)
+    elif request.method == 'DELETE':
+        test = get_object_or_404(TestCase, id=test_id)
+        test.delete()
+        return JsonResponse({'status': 'deleted'}, status=200)
 
 
 @allowed_methods('POST')
@@ -156,16 +154,15 @@ def api_new_test(request):
     except json.decoder.JSONDecodeError:
         return JsonResponse({'error': 'bad input data'}, status=400)
 
-    match body:
-        case {'name': str(), 'description': str()}:
-            test = TestCase(name=body['name'],
-                            description=body['description'],
-                            author=request.user)
-            try:
-                test.validate_unique()
-                test.save()
-                return JsonResponse({'test_id': test.id}, status=201)
-            except ValidationError:
-                return JsonResponse({'error': 'test with such name already exists'}, status=400)
+    if body.get('name') is None or body.get('description') is None:
+        return JsonResponse({'error': 'bad input data'}, status=400)
 
-    return JsonResponse({'error': 'bad input data'}, status=400)
+    test = TestCase(name=body['name'],
+                    description=body['description'],
+                    author=request.user)
+    try:
+        test.validate_unique()
+        test.save()
+        return JsonResponse({'test_id': test.id}, status=201)
+    except ValidationError:
+        return JsonResponse({'error': 'test with such name already exists'}, status=400)
