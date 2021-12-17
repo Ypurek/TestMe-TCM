@@ -7,7 +7,7 @@ class TestCase(models.Model):
     name = models.CharField(default='',
                             null=False,
                             max_length=100,
-                            unique=True)
+                            unique=False)
     description = models.CharField(default='',
                                    null=False,
                                    blank=True,
