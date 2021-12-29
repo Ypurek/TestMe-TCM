@@ -263,3 +263,4 @@ input[type="color"] {background:none !important; width:40px; height:40px; paddin
 .fileUploadBtn {background:#2582e7; height:40px; line-height:40px; padding:0 30px; border-radius:4px; color:#fff !important; font-size:14px; font-weight:600; text-align:center; text-transform:uppercase; display:inline-block;}
 	
 .Zebra_DatePicker_Icon_Wrapper {width:100%; display:block;}
+.demoIFrame {border:1px solid #000; margin:20px 0;}

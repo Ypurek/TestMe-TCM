@@ -1,12 +1,21 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.http import JsonResponse
+from uuid import uuid4
+import random
 import time
 
 
 @login_required
 def dashboard(request):
-    return render(request, 'demo.html')
+    context = {
+        'divClass': ' a'.join(str(uuid4()).split('-')),
+        'divId': str(uuid4()),
+        'inpClass': ' a'.join(str(uuid4()).split('-')),
+        'inpId': str(uuid4()),
+        'wraps': range(random.randint(1, 5))
+    }
+    return render(request, 'demo.html', context=context)
 
 
 @login_required
