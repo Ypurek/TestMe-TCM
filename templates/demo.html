@@ -65,12 +65,22 @@
               <iframe src="{% static 'assets/html/frame.html' %}" title="description"></iframe>
           </div>
             <div>
-              <label>variable selectors</label>
+              <label class="labelDemo">variable selectors</label>
                 <div class="{{ divClass }}" id="{{ divId }}">
                     {% for i in wraps %} <div> {% endfor %}
-                    <input type="text" id="{{ inpId }}" class="{{ inpClass }}"></div>
+                    <input type="text" id="{{ inpId }}" class="{{ inpClass }}" onkeyup="document.querySelector('.labelDemoResult').textContent = this.value"></div>
                   {% for i in wraps %} </div> {% endfor %}
           </div>
+            <label class="labelDemoResult"></label>
+        <div>
+            <label class="labelDemo">multiple inputs</label>
+            <div class="multiInput">
+                <input type="text">
+                <input type="text">
+                <input type="text">
+                <input type="text">
+            </div>
+        </div>
         </div>
       </div>
     </div>

@@ -264,3 +264,5 @@ input[type="color"] {background:none !important; width:40px; height:40px; paddin
 	
 .Zebra_DatePicker_Icon_Wrapper {width:100%; display:block;}
 .demoIFrame {border:1px solid #000; margin:20px 0;}
+.multiInput {border:1px solid #000; margin:10px 0;}
+.labelDemo {margin:10px 0;}
