@@ -148,7 +148,7 @@ def lazy_load_tests(request):
             'description': tc.description,
             'author': tc.author.username,
             'status': status,
-            'executor': executor
+            'executor': executor.username if executor is not None else None
         })
     return JsonResponse({'tests': payload,
                          'end': the_end}, status=200)
